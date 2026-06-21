@@ -1,0 +1,86 @@
+.toolbar{
+    z-index: 990;
+    backdrop-filter: blur(15px);
+    position: fixed;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255,255,255,0.5);
+    margin-left: 50%;
+    margin-top: 10px;
+    border-radius: 50px;
+    min-height: 50px;
+    max-height: 50px;
+    max-width: 300px;
+    overflow-x: auto;
+    white-space: nowrap;
+    transition: all 500ms;
+    transform: translate(-50%,0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    scroll-behavior: smooth;
+}
+.toolbar:hover{
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 100px rgba(0,0,0,1);
+}
+.toolbbar div{
+    height: 50px;
+    line-height: 40px;
+    margin: 0;
+    color: rgba(66, 66, 66,1);
+    background-color: rgba(255,255,255,0);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size : 18pt;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    opacity: 1;
+    visibility: visible;
+}
+.toolbutton{
+    margin-left: 10px;
+    margin-right: 10px;
+    color: rgba(66, 66, 66,1);
+    background-color: rgba(255,255,255,0);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size : 18pt;
+    transition: 500ms;
+}
+.toolbutton:hover{
+    background-color: rgba(255,255,255,0.8);
+    color: rgb(0, 0, 0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    font-size : 18pt;
+    transition: 500ms;
+}
+.titlebar{
+    z-index: 990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(15px);
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-left: 50%;
+    margin-top: 10px;
+    border-radius: 50px;
+    min-height: 50px;
+    max-width: 250px;
+    transition: all 500ms;
+    transform: translate(-50%,0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+.titlebar span{
+    margin-left: 10px;
+    margin-right: 10px;
+    color: rgba(66, 66, 66,1);
+    background-color: rgba(255,255,255,0);
+    border-radius: 10px;
+    font-size : 18pt;
+    transition: 500ms;
+}
+#ToolF2File, #ToolF2Program {
+    display: none; /* 初始隐藏 */
+    max-width: 0; /* 初始最大宽度为0 */
+    overflow: hidden; /* 隐藏溢出内容 */
+    transition: max-width 0.5s ease; /* 添加过渡效果 */
+}

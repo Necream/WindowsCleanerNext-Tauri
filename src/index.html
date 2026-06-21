@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <link rel="stylesheet" href="buttons.css">
+        <link rel="stylesheet" href="toolbar.css">
+        <title>Windows Cleaner Next</title>
+        <style>
+            body{
+                overflow        : scroll;
+                user-select     : none;
+                transition      : 500ms;
+            }
+            ::-webkit-scrollbar{display: none;}
+            .backgroundimage{
+                position: fixed;
+                top     : 0;
+                left    : 0;
+                right   : 0;
+                width   : 100%;
+                height  : 100%;
+                z-index : -1;
+            }
+            .normaltext{
+                font-size : 18pt;
+                transition: 500ms;
+            }
+            .text{
+                transition: 500ms;
+            }
+
+            /* ===== Tool UI Styles ===== */
+            .cleaner-container {
+                max-width: 960px;
+                margin: 60px auto 30px auto;
+                padding: 0 20px;
+            }
+            .cleaner-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .cleaner-header h1 {
+                font-size: 28pt;
+                font-weight: 700;
+                margin: 0 0 6px 0;
+                letter-spacing: 1px;
+            }
+            .cleaner-header .subtitle {
+                font-size: 13pt;
+                opacity: 0.65;
+                margin: 0;
+            }
+            .section-title {
+                font-size: 16pt;
+                font-weight: 600;
+                margin: 28px 0 12px 4px;
+                padding-bottom: 6px;
+                border-bottom: 2px solid rgba(128,128,128,0.18);
+            }
+            .tools-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 10px;
+            }
+            .tool-card {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 14px;
+                border-radius: 14px;
+                background: rgba(128,128,128,0.06);
+                transition: background 350ms, box-shadow 350ms;
+                cursor: default;
+            }
+            .tool-card:hover {
+                background: rgba(128,128,128,0.12);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            }
+            .tool-card.selected {
+                background: rgba(34,96,255,0.10);
+                box-shadow: 0 0 0 1.5px rgba(34,96,255,0.28);
+            }
+            .tool-card input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+                accent-color: #2260ff;
+                flex-shrink: 0;
+            }
+            .tool-info {
+                flex: 1;
+                min-width: 0;
+            }
+            .tool-name {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .tool-desc {
+                font-size: 11px;
+                opacity: 0.55;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .tool-run {
+                flex-shrink: 0;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border: none;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 300ms, transform 150ms;
+                background: rgba(34,96,255,0.12);
+                color: #2260ff;
+            }
+            .tool-run:hover {
+                background: rgba(34,96,255,0.24);
+                transform: scale(1.08);
+            }
+            .tool-run:active {
+                transform: scale(0.94);
+            }
+            .tool-run.running {
+                background: rgba(255,165,0,0.20);
+                color: #e67e00;
+                pointer-events: none;
+                animation: spin 1s linear infinite;
+            }
+            .tool-run.done {
+                background: rgba(56,245,110,0.18);
+                color: #1a9c3a;
+            }
+            .tool-run.error {
+                background: rgba(245,56,68,0.18);
+                color: #c0392b;
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(360deg); }
+            }
+            .action-bar {
+                display: flex;
+                gap: 10px;
+                margin: 24px 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .output-section {
+                margin-top: 20px;
+                border-radius: 16px;
+                background: rgba(128,128,128,0.05);
+                padding: 16px 18px;
+                max-height: 260px;
+                overflow-y: auto;
+            }
+            .output-header {
+                font-size: 14px;
+                font-weight: 700;
+                margin-bottom: 10px;
+                opacity: 0.7;
+            }
+            .output-content {
+                font-family: 'Consolas', 'Courier New', monospace;
+                font-size: 12px;
+                line-height: 1.6;
+                opacity: 0.8;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+            .output-entry {
+                padding: 2px 0;
+                border-bottom: 1px solid rgba(128,128,128,0.06);
+            }
+            .output-entry .ts {
+                opacity: 0.45;
+                margin-right: 8px;
+            }
+            .output-entry .ok  { color: #1a9c3a; }
+            .output-entry .err { color: #c0392b; }
+            .progress-bar-wrap {
+                margin: 8px 0 12px 0;
+                height: 4px;
+                border-radius: 2px;
+                background: rgba(128,128,128,0.12);
+                overflow: hidden;
+                display: none;
+            }
+            .progress-bar-fill {
+                height: 100%;
+                width: 0;
+                background: linear-gradient(90deg, #af40ff, #5b42f3, #00ddeb);
+                border-radius: 2px;
+                transition: width 300ms;
+            }
+            .bat-editor {
+                margin-top: 14px;
+                border-radius: 14px;
+                background: rgba(128,128,128,0.05);
+                overflow: hidden;
+            }
+            .bat-editor-header {
+                padding: 10px 16px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .bat-editor-header:hover { background: rgba(128,128,128,0.08); }
+            .bat-editor-header .expand-icon { font-size: 11px; }
+            .bat-editor-body { display: none; padding: 0 16px 14px 16px; }
+            .bat-textarea {
+                width: 100%;
+                height: 120px;
+                border-radius: 10px;
+                border: 1px solid rgba(128,128,128,0.2);
+                background: rgba(0,0,0,0.03);
+                color: inherit;
+                font-family: 'Consolas', 'Courier New', monospace;
+                font-size: 12px;
+                padding: 10px;
+                resize: vertical;
+                box-sizing: border-box;
+                outline: none;
+            }
+            .bat-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 8px;
+            }
+            .bat-hint { font-size: 11px; opacity: 0.5; }
+
+
+        </style>
+    </head>
+    <body>
+        <div class="cleaner-container">
+            <div class="cleaner-header">
+                <h1 class="normaltext">Windows Cleaner Next</h1>
+                <p class="subtitle normaltext">选择工具以清理系统</p>
+            </div>
+
+            <div class="section-title normaltext">系统清理</div>
+            <div class="tools-grid" id="tools-system"></div>
+
+            <div class="section-title normaltext">用户清理</div>
+            <div class="tools-grid" id="tools-user"></div>
+
+            <div class="section-title normaltext">应用清理</div>
+            <div class="tools-grid" id="tools-app"></div>
+
+            <div class="bat-editor" id="bat-editor">
+                <div class="bat-editor-header normaltext" onclick="toggleBatEditor()">
+                    <span class="expand-icon" id="bat-expand-icon">&#9654;</span> 用户定义脚本
+                </div>
+                <div class="bat-editor-body" id="bat-editor-body">
+                    <textarea class="bat-textarea" id="bat-textarea" placeholder="编写 .bat 脚本&#10;例：clean_user_paths.exe D:\Cache&#10;    clean_user_paths.exe E:\Temp"></textarea>
+                    <div class="bat-actions">
+                        <button onclick="runBatScript()">运行脚本</button>
+                        <span class="bat-hint normaltext">保存为 .bat 并执行</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-bar-wrap" id="progress-wrap">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="action-bar">
+                <button onclick="selectAll()">全选</button>
+                <button onclick="deselectAll()">取消全选</button>
+                <button onclick="selectRecommended()">推荐清理</button>
+                <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
+            </div>
+
+            <div class="output-section" id="output-section">
+                <div class="output-header normaltext">输出日志</div>
+                <div class="output-content" id="output-content">就绪。选中工具后点击"运行选中"。</div>
+            </div>
+        </div>
+    </body>
+    <script src="./renderder.js"></script>
+    <script>
+        var colorstyle='';
+        function setTextColor(color) {
+            var elements = document.getElementsByClassName('normaltext');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.color = color;
+            }
+        }
+
+        function setStarColor(color) {
+            window.starcolor = color;
+        }
+
+        function setButtonStyle(mode) {
+            var elements = document.getElementsByTagName('button');
+            for (var i = 0; i < elements.length; i++) {
+                if(elements[i].className=='correctbutton'||elements[i].className=='cantbutton'||elements[i].className=='loader'){
+                    console.log('jump'+elements[i].className);
+                }else{
+                    if (mode === 'dark') {
+                        elements[i].className = 'button2';
+                    } else {
+                        elements[i].className = 'button1';
+                    }
+                }
+            }
+        }
+
+        function setLightMode() {
+            document.body.style.backgroundColor = '#FFFFFF';
+            setTextColor('black');
+            setStarColor('rgb(0, 255, 229)');
+            setButtonStyle('light');
+            colorstyle='light';
+        }
+        function setDarkMode() {
+            document.body.style.backgroundColor = '#1F1F1F';
+            setTextColor('white');
+            setStarColor('white');
+            setButtonStyle('dark');
+            colorstyle='dark';
+        }
+
+        function applyTheme() {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setDarkMode();
+            } else {
+                setLightMode();
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+            if (e.matches) { setDarkMode(); } else { setLightMode(); }
+        });
+        window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
+            if (e.matches) { setLightMode(); } else { setDarkMode(); }
+        });
+
+        applyTheme();
+        function changecolorstyle(){
+            if(colorstyle=='light'){ setDarkMode(); }else{ setLightMode(); }
+        }
+    </script>
+    <script>
+        // ===== Tool definitions =====
+        var tools = [
+            { id: 'clean_windows_update_cache', category: 'system', name: 'Windows 更新缓存',   desc: '清理 Windows Update 下载缓存' },
+            { id: 'clean_windows_temp',         category: 'system', name: 'Windows 临时文件',   desc: '清理 C:\\Windows\\Temp' },
+            { id: 'clean_system_logs',          category: 'system', name: '系统日志',           desc: '清理 C:\\Windows\\Logs' },
+            { id: 'clean_restore_points',       category: 'system', name: '系统还原点',         desc: '删除所有卷影副本' },
+            { id: 'clean_prefetch',             category: 'system', name: '预取缓存',           desc: '清理 C:\\Windows\\Prefetch' },
+            { id: 'clean_memory',               category: 'system', name: '内存缓存',           desc: '调用 memreduct.exe 释放待机内存' },
+            { id: 'clean_user_temp',            category: 'user',   name: '用户临时文件',       desc: '清理 %TEMP% 目录' },
+            { id: 'clean_user_paths',           category: 'user',   name: '用户定义脚本',       desc: '编写 bat 脚本自定义清理' },
+            { id: 'clean_tmp_files',            category: 'user',   name: 'TMP 文件',           desc: '扫描并删除 C:\\ 中的 .tmp/.cache/.msp' },
+            { id: 'clean_browser_cache',        category: 'app',    name: '浏览器缓存',         desc: '清理 Chrome / Edge 缓存' },
+            { id: 'clean_app_cache',            category: 'app',    name: '应用缓存',           desc: '清理 AppData\\Packages 中的缓存目录' }
+        ];
+
+        var containerMap = {
+            system: 'tools-system',
+            user:   'tools-user',
+            app:    'tools-app'
+        };
+
+        var runQueue = [];
+        var isRunning = false;
+
+        // ===== Build UI =====
+        function buildUI() {
+            tools.forEach(function(tool) {
+                var container = document.getElementById(containerMap[tool.category]);
+                var card = document.createElement('div');
+                card.className = 'tool-card';
+                card.setAttribute('data-tool-id', tool.id);
+
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.id = 'cb-' + tool.id;
+                cb.addEventListener('change', function() {
+                    card.classList.toggle('selected', cb.checked);
+                    updateRunSelectedButton();
+                });
+
+                var info = document.createElement('div');
+                info.className = 'tool-info';
+                var nameEl = document.createElement('div');
+                nameEl.className = 'tool-name normaltext';
+                nameEl.textContent = tool.name;
+                var descEl = document.createElement('div');
+                descEl.className = 'tool-desc normaltext';
+                descEl.textContent = tool.desc;
+                info.appendChild(nameEl);
+                info.appendChild(descEl);
+
+                var runBtn = document.createElement('div');
+                runBtn.className = 'tool-run';
+                runBtn.setAttribute('data-tool-id', tool.id);
+                runBtn.title = '运行 ' + tool.name;
+                runBtn.innerHTML = '&#9654;';
+                runBtn.addEventListener('click', function() {
+                    if (tool.id === 'clean_user_paths') {
+                        var body = document.getElementById('bat-editor-body');
+                        if (body.style.display !== 'block') toggleBatEditor();
+                        runBatScript();
+                    }
+                    else runSingleTool(tool.id);
+                });
+
+                card.appendChild(cb);
+                card.appendChild(info);
+                card.appendChild(runBtn);
+                container.appendChild(card);
+            });
+        }
+
+        // ===== Custom Script (bat editor) =====
+        function toggleBatEditor() {
+            var body = document.getElementById('bat-editor-body');
+            var icon = document.getElementById('bat-expand-icon');
+            if (body.style.display === 'block') {
+                body.style.display = 'none';
+                icon.innerHTML = '&#9654;';
+            } else {
+                body.style.display = 'block';
+                icon.innerHTML = '&#9660;';
+            }
+        }
+
+        async function runBatScript() {
+            var script = document.getElementById('bat-textarea').value.trim();
+            if (!script) { logOutput('脚本为空。', 'err'); return; }
+            if (isRunning || !window._appPath) return;
+
+            isRunning = true;
+            saveScriptToConfig(script);
+
+            var batPath = pathUtil.join(window._appPath, 'user_script_' + Date.now() + '.bat');
+            try {
+                await sendToBackend('write_file_content', { path: batPath, data: script });
+            } catch(e) {}
+
+            logOutput('临时脚本: ' + batPath);
+            logOutput('正在运行: 自定义脚本...');
+
+            var raw = '';
+            try {
+                raw = await sendToBackend('run_with_wait', { path: batPath });
+            } catch(e) {
+                raw = e.toString();
+            }
+
+            isRunning = false;
+            var ok = raw.indexOf('Run Error:') < 0 && raw.indexOf('Runtime Error:') < 0;
+            logOutput('自定义脚本: ' + (raw || '(无输出)'), ok ? 'ok' : 'err');
+        }
+
+        async function loadScriptFromConfig() {
+            var configPath = pathUtil.join(window._appPath, 'Config', 'Configs.NCc');
+            try {
+                var content = await sendToBackend('read_file_content', { path: configPath });
+                var config = JSON.parse(content);
+                if (config.UserScript) {
+                    document.getElementById('bat-textarea').value = config.UserScript;
+                }
+            } catch(e) {}
+        }
+
+        async function saveScriptToConfig(script) {
+            try {
+                var configPath = pathUtil.join(window._appPath, 'Config', 'Configs.NCc');
+                var config = {};
+                try {
+                    var content = await sendToBackend('read_file_content', { path: configPath });
+                    config = JSON.parse(content);
+                } catch(e) {}
+                config.UserScript = script;
+                await sendToBackend('write_file_content', { path: configPath, data: JSON.stringify(config, null, 2) });
+            } catch(e) {}
+        }
+
+        // ===== Selection =====
+        function selectAll() {
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+            });
+        }
+
+        function deselectAll() {
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
+            });
+        }
+
+        function selectRecommended() {
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                if (cb) {
+                    cb.checked = (t.id !== 'clean_browser_cache');
+                    cb.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        function getSelectedIds() {
+            var ids = [];
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                if (cb && cb.checked) ids.push(t.id);
+            });
+            return ids;
+        }
+
+        function updateRunSelectedButton() {
+            var btn = document.getElementById('btn-run-selected');
+            var count = getSelectedIds().length;
+            btn.textContent = count > 0 ? '运行选中 (' + count + ')' : '运行选中';
+        }
+
+        // ===== Tool execution =====
+        function runSingleTool(toolId) {
+            if (isRunning || !window._appPath) return;
+            runQueue = [toolId];
+            window._queueTotal = 1;
+            window._queueCompleted = 0;
+            isRunning = true;
+            processQueue();
+        }
+
+        function runSelected() {
+            var ids = getSelectedIds();
+            if (ids.length === 0) {
+                logOutput('未选中任何工具。', 'err');
+                return;
+            }
+            if (isRunning || !window._appPath) return;
+            runQueue = ids.slice();
+            window._queueTotal = runQueue.length;
+            window._queueCompleted = 0;
+            isRunning = true;
+            processQueue();
+        }
+
+        function setToolStatus(toolId, status) {
+            var btn = document.querySelector('.tool-run[data-tool-id="' + toolId + '"]');
+            if (!btn) return;
+            btn.className = 'tool-run';
+            if (status === 'running') {
+                btn.classList.add('running');
+                btn.innerHTML = '&#8635;';
+            } else if (status === 'done') {
+                btn.classList.add('done');
+                btn.innerHTML = '&#10003;';
+            } else if (status === 'error') {
+                btn.classList.add('error');
+                btn.innerHTML = '&#10007;';
+            }
+        }
+
+        function resetAllToolButtons() {
+            tools.forEach(function(t) {
+                var btn = document.querySelector('.tool-run[data-tool-id="' + t.id + '"]');
+                if (btn) {
+                    btn.className = 'tool-run';
+                    btn.innerHTML = '&#9654;';
+                }
+            });
+        }
+
+        function getToolName(id) {
+            for (var i = 0; i < tools.length; i++) {
+                if (tools[i].id === id) return tools[i].name;
+            }
+            return id;
+        }
+
+        function logOutput(msg, cls) {
+            var out = document.getElementById('output-content');
+            var now = new Date();
+            var ts = now.getHours().toString().padStart(2,'0') + ':' +
+                     now.getMinutes().toString().padStart(2,'0') + ':' +
+                     now.getSeconds().toString().padStart(2,'0');
+            var entry = document.createElement('div');
+            entry.className = 'output-entry';
+            var spanTs = document.createElement('span');
+            spanTs.className = 'ts';
+            spanTs.textContent = '[' + ts + ']';
+            var spanMsg = document.createElement('span');
+            spanMsg.className = cls || '';
+            spanMsg.textContent = msg;
+            entry.appendChild(spanTs);
+            entry.appendChild(spanMsg);
+            out.appendChild(entry);
+            var section = document.getElementById('output-section');
+            section.scrollTop = section.scrollHeight;
+        }
+
+        function updateProgress(current, total) {
+            var wrap = document.getElementById('progress-wrap');
+            var fill = document.getElementById('progress-fill');
+            if (total === 0) {
+                wrap.style.display = 'none';
+                fill.style.width = '0';
+                return;
+            }
+            wrap.style.display = 'block';
+            fill.style.width = Math.round((current / total) * 100) + '%';
+        }
+
+        async function processQueue() {
+            if (runQueue.length === 0) {
+                isRunning = false;
+                updateProgress(window._queueCompleted, window._queueTotal);
+                logOutput('全部任务完成。', 'ok');
+                document.getElementById('btn-run-selected').textContent = '运行选中';
+                setTimeout(resetAllToolButtons, 1500);
+                return;
+            }
+
+            var toolId = runQueue.shift();
+            var toolName = getToolName(toolId);
+            var toolPath = pathUtil.join(window._appPath, 'Tools', toolId + '.exe');
+
+            setToolStatus(toolId, 'running');
+            updateProgress(window._queueCompleted, window._queueTotal);
+            logOutput('正在运行: ' + toolName + '...');
+
+            var raw = '';
+            try {
+                raw = await sendToBackend('run_with_wait', { path: toolPath });
+            } catch(e) {
+                raw = e.toString();
+            }
+
+            window._queueCompleted++;
+
+            var result = parseOutput(toolId, raw);
+
+            if (result.success) {
+                setToolStatus(toolId, 'done');
+            } else {
+                setToolStatus(toolId, 'error');
+            }
+
+            logOutput(toolName + ': ' + result.summary, result.success ? 'ok' : 'err');
+            updateProgress(window._queueCompleted, window._queueTotal);
+            processQueue();
+        }
+
+        // ===== Output parser (english to chinese) =====
+        function parseOutput(toolId, raw) {
+            var lines = (raw || '').replace(/\r/g, '').split('\n');
+            var zh = [];
+            var success = true;
+            var stats = null;
+
+            var exactMap = {
+                'Administrator privileges required': '需要管理员权限',
+                'System restore points cleaned successfully': '系统还原点清理成功',
+                'Memory cleanup complete': '内存清理完成',
+                'App cache cleanup complete': '应用缓存清理完成',
+                'Failed to launch memreduct.exe': '启动 memreduct.exe 失败',
+                'Failed to get TEMP environment variable': '无法获取 TEMP 环境变量',
+                'Failed to get LOCALAPPDATA environment variable': '无法获取 LOCALAPPDATA 环境变量',
+                'Failed to get LOCALAPPDATA': '无法获取 LOCALAPPDATA',
+                'memreduct.exe launched, waiting 3 seconds...': 'memreduct.exe 已启动，等待 3 秒...',
+                'Cleaning system restore points...': '正在清理系统还原点...',
+                'Scanning .tmp / .cache / .msp files in C:\\...': '正在扫描 C:\\ 中的 .tmp/.cache/.msp 文件...'
+            };
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (!line) continue;
+
+                if (line.indexOf('Run Error:') === 0 || line.indexOf('Runtime Error:') === 0) {
+                    zh.push('运行错误: ' + line.substring(line.indexOf(':') + 2).trim());
+                    success = false;
+                    continue;
+                }
+
+                var m = line.match(/^Deleted (\d+) files, (\d+) directories, (\d+) errors$/);
+                if (m) {
+                    stats = { files: parseInt(m[1]), dirs: parseInt(m[2]), errors: parseInt(m[3]) };
+                    if (stats.errors > 0) success = false;
+                    zh.push('已删除 ' + stats.files + ' 个文件、' + stats.dirs + ' 个目录，' + stats.errors + ' 个错误');
+                    continue;
+                }
+
+                m = line.match(/^Done\. Deleted (\d+) file\(s\), (\d+) error\(s\)$/);
+                if (m) {
+                    stats = { files: parseInt(m[1]), dirs: 0, errors: parseInt(m[2]) };
+                    if (stats.errors > 0) success = false;
+                    zh.push('完成。已删除 ' + stats.files + ' 个文件，' + stats.errors + ' 个错误');
+                    continue;
+                }
+
+                var t = exactMap[line];
+                if (t) {
+                    zh.push(t);
+                    if (t.indexOf('失败') >= 0 || t.indexOf('找不到') >= 0 ||
+                        t.indexOf('无法获取') >= 0 || t.indexOf('需要管理员权限') >= 0) {
+                        success = false;
+                    }
+                    continue;
+                }
+
+                if (line.indexOf('Cleaning ') === 0) {
+                    zh.push('清理' + line.substring(9));
+                } else if (line.indexOf('Scanning ') === 0) {
+                    zh.push('扫描' + line.substring(9));
+                } else if (line.indexOf('Deleting cache: ') === 0) {
+                    zh.push('删除缓存: ' + line.substring(16));
+                } else if (line.indexOf('Deleted: ') === 0) {
+                    zh.push('已删除: ' + line.substring(9));
+                } else if (line.indexOf('Path does not exist: ') === 0) {
+                    zh.push('路径不存在: ' + line.substring(21));
+                    success = false;
+                } else if (line.indexOf('Cannot find memreduct.exe: ') === 0) {
+                    zh.push('找不到 memreduct.exe: ' + line.substring(26));
+                    success = false;
+                } else if (line.indexOf('Failed to clean system restore points, error code: ') === 0) {
+                    zh.push('系统还原点清理失败，错误码: ' + line.substring(52));
+                    success = false;
+                } else {
+                    zh.push(line);
+                }
+            }
+
+            return {
+                summary: zh.join(' | '),
+                success: success,
+                stats: stats
+            };
+        }
+
+        // ===== Initialization =====
+        async function initApp() {
+            try {
+                if (typeof sendToBackend !== 'function') {
+                    logOutput('错误: sendToBackend 未定义', 'err');
+                    return;
+                }
+                var basePath = await sendToBackend('get_app_path');
+                window._appPath = basePath;
+                try {
+                    var configPath = pathUtil.join(basePath, 'Config', 'Configs.NCc');
+                    var content = await sendToBackend('read_file_content', { path: configPath });
+                    var config = JSON.parse(content);
+                    if (config.ProgramName) {
+                        document.title = config.ProgramName;
+                    }
+                } catch(e) {}
+            } catch(e) {
+                logOutput('获取路径失败: ' + (e.message || e), 'err');
+                window._appPath = '.';
+            }
+            buildUI();
+            loadScriptFromConfig();
+        }
+
+        initApp();
+    </script>
+</html>

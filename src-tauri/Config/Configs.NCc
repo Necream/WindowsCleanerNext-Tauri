@@ -1,0 +1,4 @@
+{
+  "ProgramName": "Windows Cleaner Next - Tauri",
+  "UserScript": "@echo off\necho \necho test\necho %appdata%"
+}

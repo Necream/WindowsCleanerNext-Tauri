@@ -1,0 +1,20 @@
+[package]
+name = "ncsoftui-tauri"
+version = "4.0.0"
+description = "NCSoft UI - Tauri Edition"
+authors = ["Necream"]
+edition = "2021"
+
+[lib]
+name = "ncsoftui_tauri_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

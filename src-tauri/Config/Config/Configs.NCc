@@ -1,4 +1,0 @@
-{
-  "ProgramName": "WindowsCleanerNext",
-  "UserScript": "@echo off\necho test\necho %appdata%"
-}

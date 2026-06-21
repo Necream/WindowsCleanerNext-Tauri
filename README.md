@@ -2,6 +2,8 @@
 
 基于 Tauri 2 的 Windows 系统清理工具，从 Electron 迁移而来。
 
+> 本项目从 [DaYe 的 Windows Cleaner](https://github.com/darkmatter2048/WindowsCleaner) 重构而来。
+
 ## 功能
 
 - 清理 Windows 更新缓存

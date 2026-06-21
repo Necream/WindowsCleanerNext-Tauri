@@ -4,4 +4,3 @@ target/
 *.log
 .DS_Store
 *.bat
-src-tauri/gen/

@@ -1782,7 +1782,7 @@ dependencies = [
 
 [[package]]
 name = "ncsoftui-tauri"
-version = "4.0.0"
+version = "1.1.1"
 dependencies = [
  "serde",
  "serde_json",

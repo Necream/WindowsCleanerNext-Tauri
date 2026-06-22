@@ -12,7 +12,7 @@ set(TOOLS
     clean_app_cache
     clean_tmp_files
     clean_restore_points
-    clean_memory
+    niccent_extension
     clean_user_paths
 )
 

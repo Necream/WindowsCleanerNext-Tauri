@@ -1,6 +1,6 @@
 [package]
 name = "ncsoftui-tauri"
-version = "4.0.0"
+version = "1.1.1"
 description = "NCSoft UI - Tauri Edition"
 authors = ["Necream"]
 edition = "2021"

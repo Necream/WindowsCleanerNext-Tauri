@@ -6,35 +6,94 @@
         <link rel="stylesheet" href="toolbar.css">
         <title>Windows Cleaner Next</title>
         <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body { height: 100%; }
             body{
-                overflow        : scroll;
+                overflow        : hidden;
                 user-select     : none;
                 transition      : 500ms;
             }
             ::-webkit-scrollbar{display: none;}
-            .backgroundimage{
-                position: fixed;
-                top     : 0;
-                left    : 0;
-                right   : 0;
-                width   : 100%;
-                height  : 100%;
-                z-index : -1;
-            }
-            .normaltext{
-                font-size : 18pt;
-                transition: 500ms;
-            }
-            .text{
-                transition: 500ms;
+
+            /* ===== App Shell ===== */
+            .app-shell {
+                display: flex;
+                height: 100%;
             }
 
-            /* ===== Tool UI Styles ===== */
-            .cleaner-container {
-                max-width: 960px;
-                margin: 60px auto 30px auto;
-                padding: 0 20px;
+            /* ===== Sidebar ===== */
+            .app-sidebar {
+                width: 220px;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                padding: 20px 0;
+                border-right: 1px solid rgba(128,128,128,0.12);
             }
+            .sidebar-title {
+                font-size: 13px;
+                font-weight: 600;
+                padding: 8px 22px 16px 22px;
+                opacity: 0.5;
+                letter-spacing: 0.5px;
+            }
+            .sidebar-nav {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                padding: 0 10px;
+            }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 200ms;
+                border: none;
+                background: transparent;
+                color: inherit;
+                text-align: left;
+                width: 100%;
+            }
+            .sidebar-nav-item:hover {
+                background: rgba(128,128,128,0.08);
+            }
+            .sidebar-nav-item.active {
+                background: rgba(34,96,255,0.12);
+                color: #2260ff;
+                font-weight: 600;
+            }
+            .sidebar-nav-item .nav-icon {
+                font-size: 18px;
+                width: 22px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .sidebar-footer {
+                padding: 8px 14px;
+                font-size: 11px;
+                opacity: 0.35;
+                text-align: center;
+            }
+
+            /* ===== Content Area ===== */
+            .app-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 30px 40px;
+            }
+            .tab-panel {
+                display: none;
+            }
+            .tab-panel.active {
+                display: block;
+            }
+
+            /* ===== Clean Tab Styles ===== */
             .cleaner-header {
                 text-align: center;
                 margin-bottom: 30px;
@@ -158,7 +217,7 @@
                 border-radius: 16px;
                 background: rgba(128,128,128,0.05);
                 padding: 16px 18px;
-                max-height: 260px;
+                max-height: 280px;
                 overflow-y: auto;
             }
             .output-header {
@@ -240,53 +299,254 @@
             }
             .bat-hint { font-size: 11px; opacity: 0.5; }
 
+            /* ===== Tools Tab Styles ===== */
+            .tools-tab-header {
+                margin-bottom: 28px;
+            }
+            .tools-tab-header h2 {
+                font-size: 24pt;
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+            .tools-tab-header p {
+                font-size: 13pt;
+                opacity: 0.55;
+            }
+            .tools-tab-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 14px;
+            }
+            .tool-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 14px;
+                padding: 18px;
+                border-radius: 14px;
+                background: rgba(128,128,128,0.05);
+                transition: background 250ms;
+            }
+            .tool-item:hover { background: rgba(128,128,128,0.10); }
+            .tool-item-icon {
+                font-size: 28px;
+                width: 40px;
+                flex-shrink: 0;
+                text-align: center;
+                line-height: 1;
+            }
+            .tool-item-body { flex: 1; min-width: 0; }
+            .tool-item-body h3 {
+                font-size: 15px;
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+            .tool-item-body p {
+                font-size: 12px;
+                opacity: 0.55;
+                line-height: 1.5;
+                margin-bottom: 10px;
+            }
+            .tool-item-body a {
+                font-size: 12px;
+                color: #2260ff;
+                text-decoration: none;
+            }
+            .tool-item-body a:hover { text-decoration: underline; }
 
+            /* ===== Link Tool ===== */
+            .link-tool {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                padding: 20px;
+                border-radius: 14px;
+                background: rgba(128,128,128,0.05);
+                margin-top: 28px;
+            }
+            .link-tool h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+            .link-tool .link-desc { font-size: 12px; opacity: 0.55; line-height: 1.5; margin-bottom: 8px; }
+            .link-tool-row {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+            .link-tool-row label {
+                font-size: 13px;
+                font-weight: 500;
+                min-width: 80px;
+                flex-shrink: 0;
+            }
+            .link-tool-row input {
+                flex: 1;
+                padding: 8px 10px;
+                border-radius: 8px;
+                border: 1px solid rgba(128,128,128,0.25);
+                background: rgba(0,0,0,0.03);
+                color: inherit;
+                font-size: 13px;
+                outline: none;
+            }
+            .link-tool-row input:focus {
+                border-color: #2260ff;
+            }
+            .link-tool-type {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin: 4px 0 10px 0;
+            }
+            .link-type-btn {
+                padding: 6px 14px;
+                border-radius: 20px;
+                border: 1px solid rgba(128,128,128,0.25);
+                background: transparent;
+                color: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 200ms;
+            }
+            .link-type-btn:hover { background: rgba(128,128,128,0.08); }
+            .link-type-btn.active {
+                background: rgba(34,96,255,0.12);
+                border-color: #2260ff;
+                color: #2260ff;
+                font-weight: 600;
+            }
+            .link-output {
+                margin-top: 8px;
+                padding: 10px 12px;
+                border-radius: 8px;
+                background: rgba(128,128,128,0.06);
+                font-family: 'Consolas', 'Courier New', monospace;
+                font-size: 12px;
+                white-space: pre-wrap;
+                word-break: break-all;
+                max-height: 120px;
+                overflow-y: auto;
+                display: none;
+            }
+            .link-output.show { display: block; }
+            .link-output.ok { color: #1a9c3a; }
+            .link-output.err { color: #c0392b; }
         </style>
     </head>
     <body>
-        <div class="cleaner-container">
-            <div class="cleaner-header">
-                <h1 class="normaltext">Windows Cleaner Next</h1>
-                <p class="subtitle normaltext">选择工具以清理系统</p>
-            </div>
+        <div class="app-shell">
+            <!-- ===== Sidebar ===== -->
+            <aside class="app-sidebar">
+                <div class="sidebar-title normaltext">Windows Cleaner Next</div>
+                <nav class="sidebar-nav">
+                    <button class="sidebar-nav-item active normaltext" data-tab="clean">
+                        <span class="nav-icon">&#x1F5D1;</span> 清理
+                    </button>
+                    <button class="sidebar-nav-item normaltext" data-tab="tools">
+                        <span class="nav-icon">&#x1F6E0;</span> 工具
+                    </button>
+                </nav>
+                <div class="sidebar-footer normaltext">v2.0.0</div>
+            </aside>
 
-            <div class="section-title normaltext">系统清理</div>
-            <div class="tools-grid" id="tools-system"></div>
+            <!-- ===== Content ===== -->
+            <main class="app-content">
 
-            <div class="section-title normaltext">用户清理</div>
-            <div class="tools-grid" id="tools-user"></div>
+                <!-- Tab: 清理 -->
+                <div class="tab-panel active" id="tab-clean">
+                    <div class="cleaner-header">
+                        <h1 class="normaltext">Windows Cleaner Next</h1>
+                        <p class="subtitle normaltext">选择工具以清理系统</p>
+                    </div>
 
-            <div class="section-title normaltext">应用清理</div>
-            <div class="tools-grid" id="tools-app"></div>
+                    <div class="section-title normaltext">系统清理</div>
+                    <div class="tools-grid" id="tools-system"></div>
 
-            <div class="bat-editor" id="bat-editor">
-                <div class="bat-editor-header normaltext" onclick="toggleBatEditor()">
-                    <span class="expand-icon" id="bat-expand-icon">&#9654;</span> 用户定义脚本
-                </div>
-                <div class="bat-editor-body" id="bat-editor-body">
-                    <textarea class="bat-textarea" id="bat-textarea" placeholder="编写 .bat 脚本&#10;例：clean_user_paths.exe D:\Cache&#10;    clean_user_paths.exe E:\Temp"></textarea>
-                    <div class="bat-actions">
-                        <button onclick="runBatScript()">运行脚本</button>
-                        <span class="bat-hint normaltext">保存为 .bat 并执行</span>
+                    <div class="section-title normaltext">用户清理</div>
+                    <div class="tools-grid" id="tools-user"></div>
+
+                    <div class="section-title normaltext">应用清理</div>
+                    <div class="tools-grid" id="tools-app"></div>
+
+                    <div class="bat-editor" id="bat-editor">
+                        <div class="bat-editor-header normaltext" onclick="toggleBatEditor()">
+                            <span class="expand-icon" id="bat-expand-icon">&#9654;</span> 用户定义脚本
+                        </div>
+                        <div class="bat-editor-body" id="bat-editor-body">
+                            <textarea class="bat-textarea" id="bat-textarea" placeholder="编写 .bat 脚本&#10;例：clean_user_paths.exe D:\Cache&#10;    clean_user_paths.exe E:\Temp"></textarea>
+                            <div class="bat-actions">
+                                <button onclick="runBatScript()">运行脚本</button>
+                                <span class="bat-hint normaltext">保存为 .bat 并执行</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-wrap" id="progress-wrap">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button onclick="selectAll()">全选</button>
+                        <button onclick="deselectAll()">取消全选</button>
+                        <button onclick="selectRecommended()">推荐清理</button>
+                        <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
+                    </div>
+
+                    <div class="output-section" id="output-section">
+                        <div class="output-header normaltext">输出日志</div>
+                        <div class="output-content" id="output-content">就绪。选中工具后点击"运行选中"。</div>
                     </div>
                 </div>
-            </div>
 
-            <div class="progress-bar-wrap" id="progress-wrap">
-                <div class="progress-bar-fill" id="progress-fill"></div>
-            </div>
+                <!-- Tab: 工具 -->
+                <div class="tab-panel" id="tab-tools">
+                    <div class="tools-tab-header">
+                        <h2 class="normaltext">实用工具</h2>
+                        <p class="normaltext">系统维护与辅助功能</p>
+                    </div>
 
-            <div class="action-bar">
-                <button onclick="selectAll()">全选</button>
-                <button onclick="deselectAll()">取消全选</button>
-                <button onclick="selectRecommended()">推荐清理</button>
-                <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
-            </div>
+                    <div class="tools-tab-grid">
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F4BE;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">Mem Reduct CLI</h3>
+                                <p class="normaltext">命令行内存清理工具。下载后放入 Tools 目录即可在「清理」页面中使用「内存清理」功能。</p>
+                                <a href="https://github.com/Necream/memreduct-cli/releases" target="_blank" class="normaltext">下载 memreduct-cli.exe &rarr;</a>
+                            </div>
+                        </div>
 
-            <div class="output-section" id="output-section">
-                <div class="output-header normaltext">输出日志</div>
-                <div class="output-content" id="output-content">就绪。选中工具后点击"运行选中"。</div>
-            </div>
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F4C1;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">打开 Tools 目录</h3>
+                                <p class="normaltext">打开程序工具存放目录，可手动放置或管理清理工具的可执行文件。</p>
+                                <a href="#" onclick="openToolsDir()" class="normaltext">打开目录 &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="link-tool">
+                        <h3 class="normaltext">&#x1F517; 创建链接 (mklink)</h3>
+                        <p class="link-desc normaltext">将文件/文件夹从一盘移动到另一盘，在原位置创建链接，依赖软件无需修改配置即可继续使用。</p>
+                        <div class="link-tool-type" id="link-type-group">
+                            <button class="link-type-btn active" data-type="J">目录链接 (/J)</button>
+                            <button class="link-type-btn" data-type="D">符号链接 (/D)</button>
+                            <button class="link-type-btn" data-type="">文件符号链接</button>
+                        </div>
+                        <div class="link-tool-row">
+                            <label class="normaltext">原始位置</label>
+                            <input type="text" id="link-source" placeholder="C:\Program Files\MyApp" />
+                        </div>
+                        <div class="link-tool-row">
+                            <label class="normaltext">链接位置</label>
+                            <input type="text" id="link-target" placeholder="D:\Links\MyApp" />
+                        </div>
+                        <div class="link-tool-row">
+                            <button onclick="createLink()">创建链接</button>
+                            <span class="bat-hint normaltext">需要管理员权限</span>
+                        </div>
+                        <div class="link-output" id="link-output"></div>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </body>
     <script src="./renderder.js"></script>
@@ -306,9 +566,10 @@
         function setButtonStyle(mode) {
             var elements = document.getElementsByTagName('button');
             for (var i = 0; i < elements.length; i++) {
-                if(elements[i].className=='correctbutton'||elements[i].className=='cantbutton'||elements[i].className=='loader'){
-                    console.log('jump'+elements[i].className);
-                }else{
+                if (elements[i].className.indexOf('sidebar-nav-item') >= 0) continue;
+                if (elements[i].className == 'correctbutton' || elements[i].className == 'cantbutton' || elements[i].className == 'loader') {
+                    console.log('jump' + elements[i].className);
+                } else {
                     if (mode === 'dark') {
                         elements[i].className = 'button2';
                     } else {
@@ -323,14 +584,14 @@
             setTextColor('black');
             setStarColor('rgb(0, 255, 229)');
             setButtonStyle('light');
-            colorstyle='light';
+            colorstyle = 'light';
         }
         function setDarkMode() {
             document.body.style.backgroundColor = '#1F1F1F';
             setTextColor('white');
             setStarColor('white');
             setButtonStyle('dark');
-            colorstyle='dark';
+            colorstyle = 'dark';
         }
 
         function applyTheme() {
@@ -349,11 +610,93 @@
         });
 
         applyTheme();
-        function changecolorstyle(){
-            if(colorstyle=='light'){ setDarkMode(); }else{ setLightMode(); }
+        function changecolorstyle() {
+            if (colorstyle == 'light') { setDarkMode(); } else { setLightMode(); }
         }
     </script>
     <script>
+        // ===== Tab Switching =====
+        (function() {
+            var navItems = document.querySelectorAll('.sidebar-nav-item');
+            var panels = document.querySelectorAll('.tab-panel');
+
+            navItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    navItems.forEach(function(n) { n.classList.remove('active'); });
+                    item.classList.add('active');
+                    var tabId = item.getAttribute('data-tab');
+                    panels.forEach(function(p) { p.classList.remove('active'); });
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                });
+            });
+        })();
+
+        // ===== Tools Tab: Open Directories =====
+        function openToolsDir() {
+            if (window._appPath) {
+                var toolsPath = pathUtil.join(window._appPath, 'Tools');
+                sendToBackend('run_without_wait', { path: toolsPath });
+            }
+        }
+
+        // ===== Tools Tab: Link Type Buttons =====
+        var linkType = 'J';
+        (function() {
+            var btns = document.querySelectorAll('#link-type-group .link-type-btn');
+            btns.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    btns.forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    linkType = btn.getAttribute('data-type');
+                });
+            });
+        })();
+
+        function createLink() {
+            var outputEl = document.getElementById('link-output');
+            var source = document.getElementById('link-source').value.trim();
+            var target = document.getElementById('link-target').value.trim();
+
+            if (!source || !target) {
+                outputEl.className = 'link-output show err';
+                outputEl.textContent = '请填写原始位置和链接位置。';
+                return;
+            }
+
+            if (!window._appPath) {
+                outputEl.className = 'link-output show err';
+                outputEl.textContent = '应用路径未初始化，请稍后重试。';
+                return;
+            }
+
+            outputEl.className = 'link-output show';
+            outputEl.textContent = '正在创建链接...';
+            outputEl.style.color = 'inherit';
+
+            var flag = linkType ? ' /' + linkType : '';
+            var script = '@echo off\r\nchcp 65001 >nul\r\n'
+                       + 'if exist "' + target + '" (\r\n'
+                       + '  echo 错误: 链接位置已存在\r\n'
+                       + '  exit /b 1\r\n'
+                       + ')\r\n'
+                       + 'mklink' + flag + ' "' + target + '" "' + source + '"\r\n'
+                       + 'if %errorlevel% equ 0 (\r\n'
+                       + '  echo 链接创建成功\r\n'
+                       + ') else (\r\n'
+                       + '  echo 链接创建失败 (错误码: %errorlevel%)\r\n'
+                       + ')\r\n';
+
+            var batPath = pathUtil.join(window._appPath, 'mklink_' + Date.now() + '.bat');
+            sendToBackend('write_file_content', { path: batPath, data: script }).then(function() {
+                return sendToBackend('run_with_wait', { path: batPath });
+            }).then(function(raw) {
+                outputEl.textContent = raw || '(无输出)';
+            }).catch(function(e) {
+                outputEl.className = 'link-output show err';
+                outputEl.textContent = '操作失败: ' + (e.message || e);
+            });
+        }
+
         // ===== Tool definitions =====
         var tools = [
             { id: 'clean_windows_update_cache', category: 'system', name: 'Windows 更新缓存',   desc: '清理 Windows Update 下载缓存' },
@@ -362,6 +705,7 @@
             { id: 'clean_restore_points',       category: 'system', name: '系统还原点',         desc: '删除所有卷影副本' },
             { id: 'clean_prefetch',             category: 'system', name: '预取缓存',           desc: '清理 C:\\Windows\\Prefetch' },
             { id: 'clean_memory',              category: 'system', name: '内存清理',           desc: '释放系统工作集与文件缓存 (Mem Reduct)' },
+            { id: 'clean_nvidia',              category: 'system', name: 'NVIDIA 驱动缓存',   desc: '清理 NVIDIA 驱动安装/下载缓存' },
             { id: 'niccent_extension',          category: 'system', name: 'NicCent扩展',        desc: '通知NicCent生态清理操作' },
             { id: 'clean_user_temp',            category: 'user',   name: '用户临时文件',       desc: '清理 %TEMP% 目录' },
             { id: 'clean_user_paths',           category: 'user',   name: '用户定义脚本',       desc: '编写 bat 脚本自定义清理' },
@@ -510,7 +854,11 @@
             tools.forEach(function(t) {
                 var cb = document.getElementById('cb-' + t.id);
                 if (cb) {
-                    cb.checked = (t.id !== 'clean_browser_cache');
+                    var checked = (t.id !== 'clean_browser_cache');
+                    if (t.id === 'clean_nvidia') {
+                        checked = checked && window._nvidiaInstalled;
+                    }
+                    cb.checked = checked;
                     cb.dispatchEvent(new Event('change'));
                 }
             });
@@ -682,7 +1030,9 @@
                 'memreduct-cli.exe not found.': '未找到 memreduct-cli.exe，请下载后放入 Tools 目录',
                 'Please download it and place in:': '请下载后放入以下目录:',
                 'Download page:': '下载页面:',
-                'Scanning .tmp / .cache / .msp files in C:\\...': '正在扫描 C:\\ 中的 .tmp/.cache/.msp 文件...'
+                'Scanning .tmp / .cache / .msp files in C:\\...': '正在扫描 C:\\ 中的 .tmp/.cache/.msp 文件...',
+                'NVIDIA driver not detected': '未检测到 NVIDIA 驱动',
+                'Detected NVIDIA driver installed': '检测到 NVIDIA 驱动已安装'
             };
 
             for (var i = 0; i < lines.length; i++) {
@@ -751,6 +1101,24 @@
         }
 
         // ===== Initialization =====
+        async function detectNvidia() {
+            window._nvidiaInstalled = false;
+            try {
+                window._nvidiaInstalled = await sendToBackend('nvidia_installed');
+            } catch(e) {}
+
+            var card = document.querySelector('.tool-card[data-tool-id="clean_nvidia"]');
+            if (card) {
+                if (window._nvidiaInstalled) {
+                    card.style.opacity = '1';
+                } else {
+                    card.style.opacity = '0.4';
+                    var desc = card.querySelector('.tool-desc');
+                    if (desc) desc.textContent = '未检测到 NVIDIA 软件';
+                }
+            }
+        }
+
         async function initApp() {
             try {
                 if (typeof sendToBackend !== 'function') {
@@ -773,6 +1141,7 @@
             }
             buildUI();
             loadScriptFromConfig();
+            detectNvidia();
         }
 
         initApp();

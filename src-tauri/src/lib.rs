@@ -81,6 +81,17 @@ fn write_file_content(path: String, data: String) -> Result<String, String> {
     Ok("OK".to_string())
 }
 
+#[tauri::command]
+fn nvidia_installed() -> Result<bool, String> {
+    let check_paths = [
+        r"C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA Overlay.exe",
+        r"C:\Program Files\NVIDIA Corporation\NVIDIA app\CEF\NVIDIA Overlay.exe",
+        r"C:\Windows\System32\nvapi64.dll",
+        r"C:\Program Files\NVIDIA Corporation\NVSMI\nvidia-smi.exe",
+    ];
+    Ok(check_paths.iter().any(|p| std::path::Path::new(p).exists()))
+}
+
 fn read_program_name(base_path: &str) -> String {
     let config_path = std::path::Path::new(base_path)
         .join("Config")
@@ -92,7 +103,7 @@ fn read_program_name(base_path: &str) -> String {
             }
         }
     }
-    "Program".to_string()
+    "WindowsCleanerNext-Tauri".to_string()
 }
 
 pub fn run() {
@@ -106,13 +117,10 @@ pub fn run() {
             show_message,
             read_file_content,
             write_file_content,
+            nvidia_installed,
         ])
         .setup(move |app| {
-            let base_path = if cfg!(debug_assertions) {
-                std::env::current_dir().unwrap_or_default()
-            } else {
-                app.path().resource_dir().unwrap_or_default()
-            };
+            let base_path = app.path().resource_dir().unwrap_or_default();
             let program_name = read_program_name(&base_path.to_string_lossy());
             let title = program_name.clone();
             let tray_label = program_name.clone();

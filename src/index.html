@@ -361,6 +361,7 @@
             { id: 'clean_system_logs',          category: 'system', name: '系统日志',           desc: '清理 C:\\Windows\\Logs' },
             { id: 'clean_restore_points',       category: 'system', name: '系统还原点',         desc: '删除所有卷影副本' },
             { id: 'clean_prefetch',             category: 'system', name: '预取缓存',           desc: '清理 C:\\Windows\\Prefetch' },
+            { id: 'clean_memory',              category: 'system', name: '内存清理',           desc: '释放系统工作集与文件缓存 (Mem Reduct)' },
             { id: 'niccent_extension',          category: 'system', name: 'NicCent扩展',        desc: '通知NicCent生态清理操作' },
             { id: 'clean_user_temp',            category: 'user',   name: '用户临时文件',       desc: '清理 %TEMP% 目录' },
             { id: 'clean_user_paths',           category: 'user',   name: '用户定义脚本',       desc: '编写 bat 脚本自定义清理' },
@@ -672,12 +673,15 @@
                 'System restore points cleaned successfully': '系统还原点清理成功',
                 'Memory cleanup complete': '内存清理完成',
                 'App cache cleanup complete': '应用缓存清理完成',
-                'Failed to launch memreduct.exe': '启动 memreduct.exe 失败',
+                'Failed to launch memreduct-cli.exe': '启动 memreduct-cli.exe 失败',
                 'Failed to get TEMP environment variable': '无法获取 TEMP 环境变量',
                 'Failed to get LOCALAPPDATA environment variable': '无法获取 LOCALAPPDATA 环境变量',
                 'Failed to get LOCALAPPDATA': '无法获取 LOCALAPPDATA',
-                'memreduct.exe launched, waiting 3 seconds...': 'memreduct.exe 已启动，等待 3 秒...',
                 'Cleaning system restore points...': '正在清理系统还原点...',
+                'Cleaning memory regions:': '正在清理内存区域:',
+                'memreduct-cli.exe not found.': '未找到 memreduct-cli.exe，请下载后放入 Tools 目录',
+                'Please download it and place in:': '请下载后放入以下目录:',
+                'Download page:': '下载页面:',
                 'Scanning .tmp / .cache / .msp files in C:\\...': '正在扫描 C:\\ 中的 .tmp/.cache/.msp 文件...'
             };
 
@@ -717,7 +721,10 @@
                     continue;
                 }
 
-                if (line.indexOf('Cleaning ') === 0) {
+                var mm = line.match(/^Memory was released with (.+) result\.$/);
+                if (mm) {
+                    zh.push('内存已释放 ' + mm[1]);
+                } else if (line.indexOf('Cleaning ') === 0) {
                     zh.push('清理' + line.substring(9));
                 } else if (line.indexOf('Scanning ') === 0) {
                     zh.push('扫描' + line.substring(9));
@@ -727,9 +734,6 @@
                     zh.push('已删除: ' + line.substring(9));
                 } else if (line.indexOf('Path does not exist: ') === 0) {
                     zh.push('路径不存在: ' + line.substring(21));
-                    success = false;
-                } else if (line.indexOf('Cannot find memreduct.exe: ') === 0) {
-                    zh.push('找不到 memreduct.exe: ' + line.substring(26));
                     success = false;
                 } else if (line.indexOf('Failed to clean system restore points, error code: ') === 0) {
                     zh.push('系统还原点清理失败，错误码: ' + line.substring(52));

@@ -1,8 +1,6 @@
 use std::fs;
 use std::os::windows::process::CommandExt;
 use std::process::Command;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri::Manager;
@@ -64,7 +62,7 @@ fn show_message(app: tauri::AppHandle, msg: String) -> Result<String, String> {
     use tauri_plugin_dialog::DialogExt;
     app.dialog()
         .message(msg)
-        .title("NCSoft-UI")
+        .title("WindowsCleanerNext-Tauri")
         .show(|_| {});
     Ok("OK".to_string())
 }
@@ -98,12 +96,9 @@ fn read_program_name(base_path: &str) -> String {
 }
 
 pub fn run() {
-    let quitsign = Arc::new(AtomicBool::new(false));
-
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .manage(quitsign.clone())
         .invoke_handler(tauri::generate_handler![
             get_app_path,
             run_with_wait,
@@ -167,15 +162,11 @@ pub fn run() {
 
             let window = app.get_webview_window("main").unwrap();
             window.set_title(&title)?;
-            let window_clone = window.clone();
-            let qs = quitsign.clone();
 
+            let app_handle = window.app_handle().clone();
             window.on_window_event(move |event| {
-                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                    if !qs.load(Ordering::SeqCst) {
-                        api.prevent_close();
-                        let _ = window_clone.hide();
-                    }
+                if let tauri::WindowEvent::CloseRequested { .. } = event {
+                    app_handle.exit(0);
                 }
             });
 

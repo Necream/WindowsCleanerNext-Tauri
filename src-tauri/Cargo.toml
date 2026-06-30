@@ -1,12 +1,12 @@
 [package]
-name = "ncsoftui-tauri"
-version = "1.1.1"
-description = "NCSoft UI - Tauri Edition"
+name = "windows-cleaner-next-tauri"
+version = "1.2.0"
+description = "WindowsCleanerNext - Tauri Edition"
 authors = ["Necream"]
 edition = "2021"
 
 [lib]
-name = "ncsoftui_tauri_lib"
+name = "windows_cleaner_next_tauri_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

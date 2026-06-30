@@ -1,7 +1,7 @@
 {
-  "name": "ncsoftui-tauri",
-  "version": "1.1.1",
-  "description": "The UI for NCSoft - Tauri Edition",
+  "name": "windows-cleaner-next-tauri",
+  "version": "1.2.0",
+  "description": "WindowsCleanerNext - Tauri Edition",
   "main": "src/index.html",
   "scripts": {
     "dev": "vite",

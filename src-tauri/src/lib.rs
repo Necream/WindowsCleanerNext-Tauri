@@ -82,6 +82,15 @@ fn write_file_content(path: String, data: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn get_settings_path(app: tauri::AppHandle) -> Result<String, String> {
+    let settings_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    Ok(settings_dir
+        .join("settings.json")
+        .to_string_lossy()
+        .to_string())
+}
+
+#[tauri::command]
 fn nvidia_installed() -> Result<bool, String> {
     let check_paths = [
         r"C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA Overlay.exe",
@@ -117,6 +126,7 @@ pub fn run() {
             show_message,
             read_file_content,
             write_file_content,
+            get_settings_path,
             nvidia_installed,
         ])
         .setup(move |app| {

@@ -1,11 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-config-schema/schema.json",
   "productName": "WindowsCleanerNext-Tauri",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "identifier": "com.windowscleaner.next.tauri",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://127.0.0.1:1420",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
@@ -18,7 +18,8 @@
         "height": 800,
         "decorations": true,
         "center": true,
-        "resizable": true
+        "resizable": true,
+        "visible": true
       }
     ],
     "security": {

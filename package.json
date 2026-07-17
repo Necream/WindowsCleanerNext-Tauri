@@ -1,6 +1,6 @@
 {
   "name": "windows-cleaner-next-tauri",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "WindowsCleanerNext - Tauri Edition",
   "main": "src/index.html",
   "scripts": {

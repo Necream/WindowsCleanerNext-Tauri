@@ -523,7 +523,7 @@
                         <span class="nav-icon">&#x2699;</span> 设置
                     </button>
                 </nav>
-                <div class="sidebar-footer normaltext">v2.3.1</div>
+                <div class="sidebar-footer normaltext">v2.3.2</div>
             </aside>
 
             <!-- ===== Content ===== -->
@@ -682,7 +682,47 @@
             </main>
         </div>
     </body>
-    <script src="./renderder.js"></script>
+    <script>
+        (function() {
+            'use strict';
+
+            window.pathUtil = {
+                join: function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    var parts = [];
+                    for (var i = 0; i < args.length; i++) {
+                        if (typeof args[i] !== 'string') continue;
+                        var p = args[i].replace(/[\\/]+$/, '');
+                        if (p) parts.push(p);
+                    }
+                    return parts.join('\\');
+                },
+                dirname: function(p) {
+                    if (!p) return '.';
+                    var lastSep = Math.max(p.lastIndexOf('\\'), p.lastIndexOf('/'));
+                    if (lastSep === -1) return '.';
+                    return p.substring(0, lastSep);
+                },
+                extname: function(p) {
+                    if (!p) return '';
+                    var lastSep = Math.max(p.lastIndexOf('\\'), p.lastIndexOf('/'));
+                    var lastDot = p.lastIndexOf('.');
+                    if (lastDot <= lastSep) return '';
+                    return p.substring(lastDot).toLowerCase();
+                }
+            };
+
+            window.sendToBackend = function(cmd, args) {
+                var ta = window.__TAURI__;
+                if (ta) ta = ta.core || ta;
+                var invoke = ta && ta.invoke;
+                if (invoke) {
+                    return invoke(cmd, args || {});
+                }
+                return Promise.reject('Tauri API not available');
+            };
+        })();
+    </script>
     <script>
         var colorstyle='';
         function setTextColor(color) {
@@ -730,18 +770,17 @@
 
         function setButtonStyle(mode) {
             var elements = document.getElementsByTagName('button');
+            var themeClass = mode === 'dark' ? 'button2' : 'button1';
             for (var i = 0; i < elements.length; i++) {
-                if (elements[i].className.indexOf('sidebar-nav-item') >= 0) continue;
-                if (elements[i].className.indexOf('link-type-btn') >= 0) continue;
-                if (elements[i].className == 'correctbutton' || elements[i].className == 'cantbutton' || elements[i].className == 'loader') {
-                    console.log('jump' + elements[i].className);
-                } else {
-                    if (mode === 'dark') {
-                        elements[i].className = 'button2';
-                    } else {
-                        elements[i].className = 'button1';
-                    }
+                var button = elements[i];
+                if (button.classList.contains('sidebar-nav-item')) continue;
+                if (button.classList.contains('link-type-btn')) continue;
+                if (button.classList.contains('correctbutton') || button.classList.contains('cantbutton') || button.classList.contains('loader')) {
+                    continue;
                 }
+                button.classList.remove('button1');
+                button.classList.remove('button2');
+                button.classList.add(themeClass);
             }
         }
 
@@ -1100,6 +1139,8 @@
             runQueue = [toolId];
             window._queueTotal = 1;
             window._queueCompleted = 0;
+            window._queueSucceeded = 0;
+            window._queueFailed = 0;
             isRunning = true;
             processQueue();
         }
@@ -1114,6 +1155,8 @@
             runQueue = ids.slice();
             window._queueTotal = runQueue.length;
             window._queueCompleted = 0;
+            window._queueSucceeded = 0;
+            window._queueFailed = 0;
             isRunning = true;
             processQueue();
         }
@@ -1188,7 +1231,17 @@
             if (runQueue.length === 0) {
                 isRunning = false;
                 updateProgress(window._queueCompleted, window._queueTotal);
-                logOutput('全部任务完成。', 'ok');
+                var total = window._queueTotal || 0;
+                var successCount = window._queueSucceeded || 0;
+                var failedCount = window._queueFailed || 0;
+                if (total > 0) {
+                    logOutput(
+                        '全部任务完成，共 ' + total + ' 项，成功 ' + successCount + ' 项，失败 ' + failedCount + ' 项。',
+                        failedCount > 0 ? 'err' : 'ok'
+                    );
+                } else {
+                    logOutput('全部任务完成。', 'ok');
+                }
                 document.getElementById('btn-run-selected').textContent = '运行选中';
                 setTimeout(resetAllToolButtons, 1500);
                 return;
@@ -1215,8 +1268,10 @@
 
             if (result.success) {
                 setToolStatus(toolId, 'done');
+                window._queueSucceeded = (window._queueSucceeded || 0) + 1;
             } else {
                 setToolStatus(toolId, 'error');
+                window._queueFailed = (window._queueFailed || 0) + 1;
             }
 
             logOutput(toolName + ': ' + result.summary, result.success ? 'ok' : 'err');

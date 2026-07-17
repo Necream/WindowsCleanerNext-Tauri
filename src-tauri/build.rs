@@ -1,4 +1,11 @@
 fn main() {
+    let profile = std::env::var("PROFILE").unwrap_or_default();
+    let elevation_level = if profile == "debug" {
+        "asInvoker"
+    } else {
+        "requireAdministrator"
+    };
+
     let manifest = r#"
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <dependency>
@@ -16,12 +23,12 @@ fn main() {
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>
-        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel level="__ELEVATION_LEVEL__" uiAccess="false" />
       </requestedPrivileges>
     </security>
   </trustInfo>
 </assembly>
-"#;
+"#.replace("__ELEVATION_LEVEL__", elevation_level);
 
     let windows = tauri_build::WindowsAttributes::new()
         .app_manifest(manifest);

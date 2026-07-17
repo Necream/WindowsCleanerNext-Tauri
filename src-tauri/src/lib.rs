@@ -1,11 +1,57 @@
+use encoding_rs::Encoding;
 use std::fs;
 use std::os::windows::process::CommandExt;
 use std::process::Command;
+use std::time::Duration;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
-use tauri::Manager;
+use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+#[cfg(windows)]
+#[link(name = "kernel32")]
+extern "system" {
+    fn GetACP() -> u32;
+    fn GetConsoleOutputCP() -> u32;
+}
+
+fn decode_with_encoding(bytes: &[u8], label: &[u8]) -> String {
+    if let Some(encoding) = Encoding::for_label(label) {
+        let (decoded, _, _) = encoding.decode(bytes);
+        return decoded.into_owned();
+    }
+    String::from_utf8_lossy(bytes).into_owned()
+}
+
+fn decode_tool_output(bytes: &[u8]) -> String {
+    if bytes.is_empty() {
+        return String::new();
+    }
+
+    if let Ok(text) = std::str::from_utf8(bytes) {
+        return text.to_owned();
+    }
+
+    #[cfg(windows)]
+    {
+        let console_cp = unsafe { GetConsoleOutputCP() };
+        match console_cp {
+            65001 => return String::from_utf8_lossy(bytes).into_owned(),
+            936 => return decode_with_encoding(bytes, b"gbk"),
+            _ => {}
+        }
+
+        let acp = unsafe { GetACP() };
+        match acp {
+            65001 => return String::from_utf8_lossy(bytes).into_owned(),
+            936 => return decode_with_encoding(bytes, b"gbk"),
+            _ => {}
+        }
+    }
+
+    decode_with_encoding(bytes, b"gb18030")
+}
 
 #[tauri::command]
 fn get_app_path(app: tauri::AppHandle) -> Result<String, String> {
@@ -36,13 +82,13 @@ async fn run_with_wait(path: String) -> Result<String, String> {
 
     let mut result = String::new();
     if !output.stdout.is_empty() {
-        result.push_str(&String::from_utf8_lossy(&output.stdout));
+        result.push_str(&decode_tool_output(&output.stdout));
     }
     if !output.stderr.is_empty() {
         if !result.is_empty() {
             result.push('\n');
         }
-        result.push_str(&String::from_utf8_lossy(&output.stderr));
+        result.push_str(&decode_tool_output(&output.stderr));
     }
     Ok(result)
 }
@@ -115,7 +161,21 @@ fn read_program_name(base_path: &str) -> String {
     "WindowsCleanerNext-Tauri".to_string()
 }
 
+fn append_startup_log(line: &str) {
+    let log_dir = r"C:\UDisk\Codes\WindowsCleanerNext-Tauri\tmp";
+    let _ = fs::create_dir_all(log_dir);
+    if let Ok(mut file) = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(format!(r"{}\app-startup.log", log_dir))
+    {
+        use std::io::Write;
+        let _ = writeln!(file, "{}", line);
+    }
+}
+
 pub fn run() {
+    append_startup_log("run:start");
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
@@ -130,6 +190,7 @@ pub fn run() {
             nvidia_installed,
         ])
         .setup(move |app| {
+            append_startup_log("setup:start");
             let base_path = app.path().resource_dir().unwrap_or_default();
             let program_name = read_program_name(&base_path.to_string_lossy());
             let title = program_name.clone();
@@ -178,8 +239,31 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            let window = app.get_webview_window("main").unwrap();
+            let window = match app.get_webview_window("main") {
+                Some(window) => window,
+                None => WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
+                    .title(&title)
+                    .inner_size(1000.0, 800.0)
+                    .visible(true)
+                    .resizable(true)
+                    .decorations(true)
+                    .center()
+                    .build()?,
+            };
+            append_startup_log("window:acquired");
             window.set_title(&title)?;
+            let _ = window.center();
+            let _ = window.unminimize();
+            let _ = window.show();
+            let _ = window.set_focus();
+            let window_for_show = window.clone();
+            std::thread::spawn(move || {
+                std::thread::sleep(Duration::from_millis(500));
+                let _ = window_for_show.center();
+                let _ = window_for_show.unminimize();
+                let _ = window_for_show.show();
+                let _ = window_for_show.set_focus();
+            });
 
             let app_handle = window.app_handle().clone();
             window.on_window_event(move |event| {
@@ -187,6 +271,7 @@ pub fn run() {
                     app_handle.exit(0);
                 }
             });
+            append_startup_log("setup:done");
 
             Ok(())
         })

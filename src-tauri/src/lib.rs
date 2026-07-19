@@ -1,4 +1,4 @@
-use encoding_rs::Encoding;
+﻿use encoding_rs::Encoding;
 use std::fs;
 use std::os::windows::process::CommandExt;
 use std::process::Command;
@@ -146,6 +146,83 @@ fn nvidia_installed() -> Result<bool, String> {
     ];
     Ok(check_paths.iter().any(|p| std::path::Path::new(p).exists()))
 }
+#[tauri::command]
+fn get_hibernate_status() -> Result<bool, String> {
+    // When hibernate is enabled, Windows creates C:\hiberfil.sys
+    // When disabled, the file is removed
+    Ok(std::path::Path::new("C:\\hiberfil.sys").exists())
+}
+
+#[tauri::command]
+fn set_hibernate(enabled: bool) -> Result<String, String> {
+    let arg = if enabled { "on" } else { "off" };
+    let output = Command::new("powercfg.exe")
+        .args(["/h", arg])
+        .output()
+        .map_err(|e| format!("设置休眠状态失败: {}", e))?;
+
+    if output.status.success() {
+        Ok(if enabled {
+            "休眠已启用".to_string()
+        } else {
+            "休眠已禁用".to_string()
+        })
+    } else {
+        let err = decode_tool_output(&output.stderr);
+        Err(format!("操作失败（可能需要管理员权限）: {}", err))
+    }
+}
+
+#[tauri::command]
+async fn get_virtual_memory_info() -> Result<String, String> {
+    let ps_script = "Get-CimInstance Win32_PageFileSetting | Select-Object Name, InitialSize, MaximumSize | ConvertTo-Json -Compress";
+    let output = Command::new("powershell")
+        .args(["-NoProfile", "-Command", ps_script])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .map_err(|e| format!("查询虚拟内存失败: {}", e))?;
+
+    let stdout = decode_tool_output(&output.stdout);
+    if stdout.trim().is_empty() || stdout.trim() == "null" {
+        // No page file configured — return empty array
+        return Ok("[]".to_string());
+    }
+    Ok(stdout)
+}
+
+#[tauri::command]
+async fn set_virtual_memory(drive: String, initial_size: u32, maximum_size: u32) -> Result<String, String> {
+    // Sanitize drive — ensure it ends with :
+    let drive = if drive.ends_with(':') { drive } else { format!("{}:", drive) };
+
+    let ps_script = format!(
+        "$ErrorActionPreference='Stop'; \
+         $drive='{0}'; \
+         $pf=Get-CimInstance Win32_PageFileSetting -Filter \"Name='{{0}}'\" -ErrorAction SilentlyContinue; \
+         if (-not $pf) {{ \
+           $pf=New-CimInstance Win32_PageFileSetting -Property @{{Name=$drive; InitialSize=0; MaximumSize=0}} -ClientOnly; \
+           Set-CimInstance -InputObject $pf -Property @{{InitialSize={1}; MaximumSize={2}}} | Out-Null; \
+         }} else {{ \
+           Set-CimInstance -InputObject $pf -Property @{{InitialSize={1}; MaximumSize={2}}} | Out-Null; \
+         }}; \
+         Write-Output 'OK'",
+        drive, initial_size, maximum_size
+    );
+
+    let output = Command::new("powershell")
+        .args(["-NoProfile", "-Command", &ps_script])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .map_err(|e| format!("设置虚拟内存失败: {}", e))?;
+
+    if output.status.success() {
+        Ok("虚拟内存设置已更新（可能需要重启生效）".to_string())
+    } else {
+        let err = decode_tool_output(&output.stderr);
+        Err(format!("设置失败（可能需要管理员权限）: {}", err))
+    }
+}
+
 
 fn read_program_name(base_path: &str) -> String {
     let config_path = std::path::Path::new(base_path)
@@ -188,6 +265,10 @@ pub fn run() {
             write_file_content,
             get_settings_path,
             nvidia_installed,
+            get_hibernate_status,
+            set_hibernate,
+            get_virtual_memory_info,
+            set_virtual_memory,
         ])
         .setup(move |app| {
             append_startup_log("setup:start");
@@ -278,3 +359,10 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+
+
+
+
+
+

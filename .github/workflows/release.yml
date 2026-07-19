@@ -1,0 +1,90 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  build-and-publish:
+    name: build-and-publish
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: setup rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: build release bundles
+        run: npm run tauri build
+
+      - name: upload msi artifact
+        id: upload-msi
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: error
+
+      - name: upload nsis artifact
+        id: upload-nsis
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-nsis
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+
+      - name: sign msi with SignPath Foundation
+        if: ${{ secrets.SIGNPATH_API_TOKEN != '' && vars.SIGNPATH_ORGANIZATION_ID != '' && vars.SIGNPATH_PROJECT_SLUG != '' && vars.SIGNPATH_SIGNING_POLICY_SLUG != '' }}
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-msi.outputs.artifact-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-for-completion: true
+          output-artifact-directory: signed-artifacts/msi
+
+      - name: sign nsis with SignPath Foundation
+        if: ${{ secrets.SIGNPATH_API_TOKEN != '' && vars.SIGNPATH_ORGANIZATION_ID != '' && vars.SIGNPATH_PROJECT_SLUG != '' && vars.SIGNPATH_SIGNING_POLICY_SLUG != '' }}
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-nsis.outputs.artifact-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-for-completion: true
+          output-artifact-directory: signed-artifacts/nsis
+
+      - name: collect release assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release-upload | Out-Null
+          $msiSource = if (Test-Path signed-artifacts/msi) { 'signed-artifacts/msi' } else { 'src-tauri/target/release/bundle/msi' }
+          $nsisSource = if (Test-Path signed-artifacts/nsis) { 'signed-artifacts/nsis' } else { 'src-tauri/target/release/bundle/nsis' }
+          Copy-Item "$msiSource/*" release-upload -Force
+          Copy-Item "$nsisSource/*" release-upload -Force
+
+      - name: create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-upload/*
+          generate_release_notes: true

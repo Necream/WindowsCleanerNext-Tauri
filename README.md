@@ -104,6 +104,14 @@ npm run tauri build
 
 构建产物会输出到 `src-tauri/target/release/`。
 
+## Microsoft Store 发布
+
+如果你想把这个项目提交到 Microsoft Store，可以先看这里：
+
+- [STORE_PUBLISH.md](./STORE_PUBLISH.md)
+
+当前仓库保留了现有的 Windows 安装包发布方式，同时也预留了商店提交所需的发布资料与流程说明。
+
 ## 目录说明
 
 - `src/` 前端页面

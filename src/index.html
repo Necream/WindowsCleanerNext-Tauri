@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
@@ -519,8 +519,14 @@
                     <button class="sidebar-nav-item normaltext" data-tab="tools">
                         <span class="nav-icon">&#x1F6E0;</span> 工具
                     </button>
+                    <button class="sidebar-nav-item normaltext" data-tab="advanced">
+                        <span class="nav-icon">&#x2696;</span> 高级
+                    </button>
                     <button class="sidebar-nav-item normaltext" data-tab="settings">
                         <span class="nav-icon">&#x2699;</span> 设置
+                    </button>
+                    <button class="sidebar-nav-item normaltext" data-tab="about">
+                        <span class="nav-icon">&#x2139;</span> 关于
                     </button>
                 </nav>
                 <div class="sidebar-footer normaltext">v2.3.2</div>
@@ -679,6 +685,75 @@
                     </div>
                 </div>
 
+                <!-- Tab: 高级 -->
+                <div class="tab-panel" id="tab-advanced">
+                    <div class="tools-tab-header">
+                        <h2 class="normaltext">高级</h2>
+                        <p class="normaltext">系统电源与内存高级设置</p>
+                    </div>
+
+                    <!-- Hibernate Toggle -->
+                    <div class="link-tool">
+                        <h3 class="normaltext">休眠开关</h3>
+                        <p class="link-desc normaltext">启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。</p>
+                        <div class="link-tool-row">
+                            <label class="normaltext">当前状态</label>
+                            <span id="hibernate-status" class="normaltext" style="font-weight:600">查询中...</span>
+                        </div>
+                        <div class="link-tool-row">
+                            <button id="btn-hibernate-on" onclick="setHibernate(true)" class="button1">启用休眠</button>
+                            <button id="btn-hibernate-off" onclick="setHibernate(false)" class="button1">禁用休眠</button>
+                        </div>
+                        <div class="link-output" id="hibernate-output"></div>
+                    </div>
+
+                    <!-- Virtual Memory -->
+                    <div class="tool-item" style="margin-top:20px">
+                        <div class="tool-item-icon">&#x1F4C8;</div>
+                        <div class="tool-item-body">
+                            <h3 class="normaltext">虚拟内存管理</h3>
+                            <p class="normaltext">查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改</p>
+                            <div style="margin:8px 0">
+                                <span class="normaltext" style="opacity:0.7">当前配置：</span>
+                                <span id="vm-info" class="normaltext" style="font-weight:600">查询中...</span>
+                            </div>
+                            <a href="#" onclick="openVirtualMemorySettings()" class="normaltext">打开系统设置 &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab: 关于 -->
+                <div class="tab-panel" id="tab-about">
+                    <div style="text-align:center; padding:20px 0 10px 0">
+                        <img src="app-icon.png" style="width:72px; height:72px; border-radius:16px" />
+                        <h1 style="font-size:24pt; font-weight:700; margin:10px 0 0 0; letter-spacing:1px">Windows Cleaner Next</h1>
+                        <p style="opacity:0.5; margin:4px 0 0 0">Tauri Edition</p>
+                    </div>
+
+                    <div class="settings-surface">
+                        <div class="link-tool">
+                            <h3 class="normaltext">软件</h3>
+                            <div class="link-tool-row">
+                                <label class="normaltext">当前版本</label>
+                                <span id="about-version" class="normaltext" style="font-weight:600">2.3.3</span>
+                            </div>
+                            <div class="link-tool-row">
+                                <button id="btn-check-update" onclick="checkUpdate()" class="button1">检查更新</button>
+                                <span id="update-status" class="normaltext" style="margin-left:10px"></span>
+                            </div>
+                            <div class="link-output" id="update-output"></div>
+                        </div>
+
+                                                <div class="link-tool">
+                            <h3 class="normaltext">捐赠</h3>
+                            <div class="link-tool-row">
+                                <p class="normaltext" style="font-weight:600; margin-bottom:6px">微信捐赠</p>
+                            </div>
+                            <div style="text-align:center">
+                                <img src="donate-wechat.jpg" style="max-width:280px; border-radius:12px" />
+                            </div>
+                        </div></div>
+                    </div>
+                </div>
             </main>
         </div>
     </body>
@@ -1370,6 +1445,137 @@
             };
         }
 
+        // ===== Advanced Page =====
+        async function loadHibernateStatus() {
+            var statusEl = document.getElementById('hibernate-status');
+            var outputEl = document.getElementById('hibernate-output');
+            if (!statusEl) return;
+            statusEl.textContent = '查询中...';
+            try {
+                var enabled = await sendToBackend('get_hibernate_status');
+                statusEl.textContent = enabled ? '已启用' : '已禁用';
+                statusEl.style.color = enabled ? 'var(--accent-color)' : 'var(--text-muted)';
+            } catch(e) {
+                statusEl.textContent = '查询失败';
+                if (outputEl) {
+                    outputEl.className = 'link-output show err';
+                    outputEl.textContent = '错误: ' + (e.message || e);
+                }
+            }
+        }
+
+        async function setHibernate(enabled) {
+            var outputEl = document.getElementById('hibernate-output');
+            outputEl.className = 'link-output show';
+            outputEl.textContent = '正在' + (enabled ? '启用' : '禁用') + '休眠...';
+            outputEl.style.color = 'inherit';
+            try {
+                var result = await sendToBackend('set_hibernate', { enabled: enabled });
+                outputEl.textContent = result;
+                outputEl.style.color = 'var(--accent-color)';
+                await loadHibernateStatus();
+            } catch(e) {
+                outputEl.className = 'link-output show err';
+                outputEl.textContent = '操作失败: ' + (e.message || e);
+            }
+        }
+
+        async function loadVirtualMemoryInfo() {
+            var infoEl = document.getElementById('vm-info');
+            if (!infoEl) return;
+            infoEl.textContent = '查询中...';
+            try {
+                var raw = await sendToBackend('get_virtual_memory_info');
+                var data = JSON.parse(raw);
+                if (!data || (Array.isArray(data) && data.length === 0)) {
+                    infoEl.textContent = '未配置（由系统管理）';
+                    return;
+                }
+                var arr = Array.isArray(data) ? data : [data];
+                var parts = arr.map(function(p) {
+                    return p.Name + ' (' + p.InitialSize + ' MB ~ ' + p.MaximumSize + ' MB)';
+                });
+                infoEl.textContent = parts.join('; ') || '未配置（由系统管理）';
+            } catch(e) {
+                infoEl.textContent = '查询失败';
+            }
+        }
+
+        async function openVirtualMemorySettings() {
+            var batContent = '@echo off && start "" control sysdm.cpl';
+            var batPath = pathUtil.join(window._appPath, 'open_vm_' + Date.now() + '.bat');
+            try {
+                await sendToBackend('write_file_content', { path: batPath, data: batContent });
+                await sendToBackend('run_without_wait', { path: batPath });
+            } catch(e) {
+                var vmInfo = document.getElementById('vm-info');
+                if (vmInfo) vmInfo.textContent = '打开失败: ' + (e.message || e);
+            }
+        }
+
+        // ===== About Page =====
+        async function checkUpdate() {
+            var btn = document.getElementById('btn-check-update');
+            var status = document.getElementById('update-status');
+            var output = document.getElementById('update-output');
+            var currentVer = document.getElementById('about-version').textContent.trim();
+
+            btn.disabled = true;
+            btn.textContent = '检查中...';
+            status.textContent = '';
+            output.className = 'link-output';
+            output.textContent = '';
+
+            try {
+                var resp = await fetch('https://api.github.com/repos/Necream/WindowsCleanerNext-Tauri/releases/latest');
+                if (!resp.ok) throw new Error('请求失败: ' + resp.status);
+                var data = await resp.json();
+                var latestVer = data.tag_name.replace(/^v/, '');
+                function _cmpVer(a,b){var p=a.split(".").map(Number),q=b.split(".").map(Number);for(var k=0;k<Math.max(p.length,q.length);k++){var va=p[k]||0,vb=q[k]||0;if(va>vb)return 1;if(va<vb)return -1}return 0}
+                var _cmp = _cmpVer(latestVer, currentVer);
+                if (_cmp > 0) {
+                    status.textContent = '发现新版本 ' + latestVer;
+                    status.style.color = '#eab308';
+                    output.className = 'link-output show';
+                    output.innerHTML = '新版本 ' + latestVer + ' 可用。' +
+                        ' <a href="https://github.com/Necream/WindowsCleanerNext-Tauri/releases/tag/v' + latestVer + '" target="_blank" style="color:var(--accent-color)">前往下载</a>';
+                } else if (_cmp === 0) {
+                    status.textContent = '已是最新版本';
+                    status.style.color = 'var(--accent-color)';
+                    output.className = 'link-output show';
+                    output.textContent = '当前版本 ' + currentVer + ' 已是最新。';
+                } else {
+                    status.textContent = '使用的是开发内部版本，无法更新';
+                    status.style.color = 'var(--text-muted)';
+                    output.className = 'link-output show';
+                    output.textContent = '当前版本 ' + currentVer + '，最新发布 ' + latestVer + '。';
+                }
+            } catch(e) {
+                status.textContent = '检查失败';
+                status.style.color = '#ef4444';
+                output.className = 'link-output show err';
+                output.textContent = '无法获取最新版本信息: ' + (e.message || e);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '检查更新';
+            }
+        }
+
+        // ===== Tab switch hook =====
+        (function patchTabSwitch() {
+            var navItems = document.querySelectorAll('.sidebar-nav-item');
+            navItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    var tabId = item.getAttribute('data-tab');
+                    if (tabId === 'advanced') {
+                        setTimeout(function() {
+                            loadHibernateStatus();
+                            loadVirtualMemoryInfo();
+                        }, 50);
+                    }
+                });
+            });
+        })();
         // ===== Initialization =====
         async function detectNvidia() {
             window._nvidiaInstalled = false;
@@ -1419,3 +1625,8 @@
         initApp();
     </script>
 </html>
+
+
+
+
+

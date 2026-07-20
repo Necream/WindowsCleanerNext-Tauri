@@ -191,6 +191,22 @@ async fn get_virtual_memory_info() -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn get_c_drive_usage() -> Result<String, String> {
+    let ps_script = "Get-CimInstance Win32_LogicalDisk -Filter \"DeviceID='C:'\" | Select-Object Size,FreeSpace | ConvertTo-Json -Compress";
+    let output = Command::new("powershell")
+        .args(["-NoProfile", "-Command", ps_script])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .map_err(|e| format!("查询磁盘空间失败: {}", e))?;
+
+    let stdout = decode_tool_output(&output.stdout);
+    if stdout.trim().is_empty() || stdout.trim() == "null" {
+        return Err("未能读取 C 盘空间信息".to_string());
+    }
+    Ok(stdout)
+}
+
+#[tauri::command]
 async fn set_virtual_memory(drive: String, initial_size: u32, maximum_size: u32) -> Result<String, String> {
     // Sanitize drive — ensure it ends with :
     let drive = if drive.ends_with(':') { drive } else { format!("{}:", drive) };
@@ -268,6 +284,7 @@ pub fn run() {
             get_hibernate_status,
             set_hibernate,
             get_virtual_memory_info,
+            get_c_drive_usage,
             set_virtual_memory,
         ])
         .setup(move |app| {

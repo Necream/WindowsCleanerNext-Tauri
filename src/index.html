@@ -51,11 +51,25 @@
             body{
                 overflow        : hidden;
                 user-select     : none;
-                transition      : 500ms;
+                transition      : background-color 280ms ease, color 280ms ease;
                 background      : var(--bg-main);
                 color           : var(--text-primary);
             }
             ::-webkit-scrollbar{display: none;}
+            * { -webkit-tap-highlight-color: transparent; }
+
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes popIn {
+                from { opacity: 0; transform: translateY(8px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes scaleIn {
+                from { opacity: 0; transform: scale(0.96); }
+                to { opacity: 1; transform: scale(1); }
+            }
 
             /* ===== App Shell ===== */
             .app-shell {
@@ -81,6 +95,60 @@
                 opacity: 0.62;
                 letter-spacing: 0.5px;
             }
+            .sidebar-disk {
+                padding: 0 16px 14px 16px;
+            }
+            .sidebar-disk-card {
+                border-radius: 14px;
+                border: 1px solid var(--border-color);
+                background: var(--bg-card);
+                box-shadow: var(--shadow-sm);
+                padding: 12px 12px 10px 12px;
+                animation: fadeInUp 240ms ease both;
+            }
+            .sidebar-disk-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                font-size: 12px;
+                line-height: 1.3;
+            }
+            .sidebar-disk-label {
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+            .sidebar-disk-value {
+                color: var(--text-secondary);
+                font-size: 11px;
+                white-space: nowrap;
+            }
+            .sidebar-disk-bar {
+                height: 8px;
+                border-radius: 12px;
+                background: var(--bg-hover);
+                overflow: hidden;
+                position: relative;
+            }
+            .sidebar-disk-fill {
+                height: 100%;
+                width: 0%;
+                border-radius: 12px;
+                background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 62%, white));
+                transition: width 260ms ease;
+            }
+            .sidebar-disk-fill.warn {
+                background: linear-gradient(90deg, #f59e0b, #ef4444);
+            }
+            .sidebar-disk-foot {
+                margin-top: 7px;
+                font-size: 11px;
+                color: var(--text-muted);
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+            }
             .sidebar-nav {
                 flex: 1;
                 display: flex;
@@ -96,7 +164,7 @@
                 border-radius: 8px;
                 cursor: pointer;
                 font-size: 14px;
-                transition: background 200ms;
+                transition: background 200ms, transform 180ms, box-shadow 180ms;
                 border: none;
                 background: transparent;
                 color: inherit;
@@ -105,6 +173,7 @@
             }
             .sidebar-nav-item:hover {
                 background: var(--bg-hover);
+                transform: translateX(2px);
             }
             .sidebar-nav-item.active {
                 background: var(--accent-weak);
@@ -121,6 +190,180 @@
                 text-align: center;
                 flex-shrink: 0;
             }
+            .preset-split {
+                position: relative;
+                display: inline-flex;
+                align-items: stretch;
+            }
+            .preset-split-main {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-right: 0 !important;
+            }
+            .preset-split:hover > .button1,
+            .preset-manage:hover > .button1 {
+                background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239,244,251,0.96));
+                border-color: color-mix(in srgb, var(--accent-color, #2563eb) 26%, transparent);
+                box-shadow: 0 2px 6px rgba(15,23,42,0.06), 0 12px 24px rgba(15,23,42,0.08);
+            }
+            .preset-split:hover > .button2,
+            .preset-manage:hover > .button2 {
+                outline: 0;
+                transform: translateY(1px);
+                background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color, #2563eb) 96%, white), color-mix(in srgb, var(--accent-color, #2563eb) 82%, black));
+                box-shadow: 0 2px 4px rgba(15,23,42,0.08), 0 16px 28px color-mix(in srgb, var(--accent-color, #2563eb) 22%, transparent);
+            }
+            .preset-split-toggle {
+                width: 34px;
+                min-width: 34px;
+                padding: 0;
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .preset-menu {
+                position: absolute;
+                left: 0;
+                top: calc(100% + 6px);
+                z-index: 60;
+                min-width: 180px;
+                max-height: 240px;
+                overflow: auto;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                background: color-mix(in srgb, var(--bg-panel-strong) 78%, transparent);
+                box-shadow: var(--shadow-md);
+                padding: 6px;
+                display: none;
+                backdrop-filter: blur(10px) saturate(140%);
+            }
+            .preset-menu.flip-up {
+                top: auto;
+                bottom: calc(100% + 6px);
+            }
+            .preset-menu.show { display: block; }
+            .preset-menu-item {
+                width: 100%;
+                text-align: left;
+                border: none;
+                background: transparent;
+                padding: 8px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                color: var(--text-primary);
+                animation: popIn 180ms ease both;
+            }
+            .preset-menu-item:hover {
+                background: var(--bg-hover);
+            }
+            .dialog-overlay {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(15, 23, 42, 0.45);
+                backdrop-filter: blur(6px);
+                z-index: 200;
+                padding: 20px;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 180ms ease;
+            }
+            .dialog-overlay.show {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .dialog-box {
+                width: min(92vw, 420px);
+                border-radius: 14px;
+                border: 1px solid var(--border-color);
+                background: var(--bg-panel-strong);
+                box-shadow: var(--shadow-md);
+                padding: 18px;
+                transform: scale(0.98) translateY(8px);
+                opacity: 0;
+                transition: transform 180ms ease, opacity 180ms ease;
+            }
+            .dialog-overlay.show .dialog-box {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            .dialog-overlay.closing .dialog-box {
+                transform: scale(0.98) translateY(8px);
+                opacity: 0;
+            }
+            .dialog-title {
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+            .dialog-body {
+                font-size: 13px;
+                color: var(--text-secondary);
+                line-height: 1.6;
+            }
+            .dialog-input {
+                width: 100%;
+                margin-top: 12px;
+                padding: 9px 12px;
+                border-radius: 10px;
+                border: 1px solid var(--input-border);
+                background: var(--input-bg);
+                color: inherit;
+                outline: none;
+                font-size: 13px;
+            }
+            .dialog-input:focus {
+                border-color: var(--accent-color, #2563eb);
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+            }
+            .dialog-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                margin-top: 16px;
+            }
+            .preset-manage {
+                position: relative;
+                display: inline-flex;
+                align-items: stretch;
+                min-width: 0;
+            }
+            .preset-manage-main {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-right: 0 !important;
+                padding-right: 12px;
+            }
+            .preset-manage-toggle {
+                width: 34px;
+                min-width: 34px;
+                padding: 0;
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .preset-manage-menu {
+                position: absolute;
+                left: 0;
+                top: calc(100% + 6px);
+                z-index: 60;
+                min-width: 180px;
+                max-height: 240px;
+                overflow: auto;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                background: var(--bg-panel-strong);
+                box-shadow: var(--shadow-md);
+                padding: 6px;
+                display: none;
+            }
+            .preset-manage-menu.show { display: block; }
             .sidebar-footer {
                 padding: 8px 14px;
                 font-size: 11px;
@@ -132,7 +375,7 @@
             .app-content {
                 flex: 1;
                 overflow-y: auto;
-                padding: 30px 40px;
+                padding: 30px 40px 0 40px;
                 background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.02) 100%);
             }
             .tab-panel {
@@ -140,6 +383,7 @@
             }
             .tab-panel.active {
                 display: block;
+                animation: fadeInUp 220ms ease both;
             }
 
             /* ===== Clean Tab Styles ===== */
@@ -264,9 +508,155 @@
             .action-bar {
                 display: flex;
                 gap: 10px;
-                margin: 24px 0;
+                margin: 18px -40px 0 -40px;
                 flex-wrap: wrap;
                 justify-content: center;
+                position: sticky;
+                bottom: 0;
+                z-index: 40;
+                padding: 18px 40px 0 40px;
+                border-radius: 0;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                overflow: visible;
+                isolation: isolate;
+            }
+            .action-bar::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: -100%;
+                bottom: 0;
+                pointer-events: none;
+                z-index: 0;
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                opacity: 1;
+            }
+            .action-bar::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                pointer-events: none;
+                z-index: 0;
+                background: rgba(255,255,255,0.002);
+                backdrop-filter: blur(96px);
+                -webkit-backdrop-filter: blur(96px);
+                opacity: 1;
+                will-change: backdrop-filter;
+                -webkit-mask-image: linear-gradient(180deg,
+                    rgba(0,0,0,0) 0%,
+                    rgba(0,0,0,0) 24%,
+                    rgba(0,0,0,0.14) 46%,
+                    rgba(0,0,0,0.84) 78%,
+                    rgba(0,0,0,1) 100%);
+                mask-image: linear-gradient(180deg,
+                    rgba(0,0,0,0) 0%,
+                    rgba(0,0,0,0) 24%,
+                    rgba(0,0,0,0.14) 46%,
+                    rgba(0,0,0,0.84) 78%,
+                    rgba(0,0,0,1) 100%);
+            }
+            .action-bar.running {
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                backdrop-filter: none;
+            }
+            .action-bar .run-overlay {
+                position: absolute;
+                inset: 6px 14px 6px 14px;
+                border-radius: 12px;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: 700;
+                letter-spacing: 0.4px;
+                color: #f8fafc;
+                overflow: hidden;
+                pointer-events: none;
+                z-index: 3;
+                background: linear-gradient(180deg,
+                    rgba(255,255,255,0.035) 0%,
+                    rgba(255,255,255,0.085) 100%);
+                border: none;
+                box-shadow: none;
+                color: #111827;
+            }
+            body[data-theme="dark"] .action-bar .run-overlay {
+                color: #f8fafc;
+            }
+            .action-bar.running .run-overlay {
+                display: flex;
+                animation: fadeInUp 160ms ease both;
+            }
+            .action-bar .run-fill {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 0%;
+                background: var(--accent-color);
+                transition: width 260ms ease, background-color 220ms ease;
+                z-index: -2;
+                border-radius: 12px;
+            }
+            .action-bar .run-overlay::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent 70%);
+                z-index: -1;
+                border-radius: 12px;
+            }
+            .action-bar.running[data-theme-gray="1"] .run-overlay {
+                background: linear-gradient(180deg,
+                    rgba(0,0,0,0.04) 0%,
+                    rgba(0,0,0,0.12) 100%);
+            }
+            .action-bar.running .run-fill {
+                width: var(--run-progress, 0%);
+            }
+            .action-bar.running .bottom-actions {
+                opacity: 0;
+                pointer-events: none;
+                transform: scale(0.98);
+            }
+            .bottom-actions {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                transition: opacity 200ms ease, transform 200ms ease;
+                position: relative;
+                z-index: 2;
+                padding: 0;
+                transform: translateY(-10px);
+                filter: blur(0.55px);
+            }
+            .action-bar button {
+                position: relative;
+                z-index: 2;
+                border-radius: 12px;
+                min-height: 38px;
+            }
+            .action-bar button.pressed {
+                animation: expandButton 280ms ease;
+                transform-origin: center center;
+            }
+            @keyframes expandButton {
+                0% { transform: scale(1); }
+                45% { transform: scale(1.06); }
+                100% { transform: scale(1); }
             }
             .output-section {
                 margin-top: 20px;
@@ -387,9 +777,13 @@
                 background: var(--bg-card);
                 border: 1px solid var(--border-color);
                 box-shadow: var(--shadow-sm);
-                transition: background 250ms;
+                transition: background 250ms, box-shadow 180ms, transform 180ms, border-color 180ms;
+                width: 100%;
+                min-width: 0;
+                overflow: hidden;
+                animation: fadeInUp 220ms ease both;
             }
-            .tool-item:hover { background: var(--bg-panel-strong); }
+            .tool-item:hover { background: var(--bg-panel-strong); transform: translateY(-1px); box-shadow: var(--shadow-md); }
             .tool-item-icon {
                 font-size: 28px;
                 width: 40px;
@@ -397,7 +791,7 @@
                 text-align: center;
                 line-height: 1;
             }
-            .tool-item-body { flex: 1; min-width: 0; }
+            .tool-item-body { flex: 1; min-width: 0; overflow: hidden; }
             .tool-item-body h3 {
                 font-size: 15px;
                 font-weight: 600;
@@ -408,6 +802,9 @@
                 font-size: 12px;
                 color: var(--text-secondary);
                 line-height: 1.5;
+                white-space: normal;
+                overflow-wrap: anywhere;
+                word-break: break-word;
                 margin-bottom: 10px;
             }
             .tool-item-body a {
@@ -428,6 +825,7 @@
                 border: 1px solid var(--border-color);
                 box-shadow: var(--shadow-sm);
                 margin-top: 28px;
+                animation: fadeInUp 220ms ease both;
             }
             .link-tool h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
             .link-tool .link-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
@@ -435,12 +833,20 @@
                 display: flex;
                 gap: 10px;
                 align-items: center;
+                flex-wrap: wrap;
+                min-width: 0;
             }
             .link-tool-row label {
                 font-size: 13px;
                 font-weight: 500;
                 min-width: 80px;
                 flex-shrink: 0;
+            }
+            .link-tool-row span,
+            .link-tool-row a {
+                min-width: 0;
+                overflow-wrap: anywhere;
+                word-break: break-word;
             }
             .link-tool-row input {
                 flex: 1;
@@ -452,7 +858,28 @@
                 font-size: 13px;
                 outline: none;
             }
+            .link-tool-row select {
+                flex: 1;
+                padding: 8px 10px;
+                border-radius: 8px;
+                border: 1px solid var(--input-border);
+                background: var(--input-bg);
+                color: inherit;
+                font-size: 13px;
+                outline: none;
+                min-width: 0;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+            .link-tool-row button {
+                flex-shrink: 0;
+            }
             .link-tool-row input:focus {
+                border-color: var(--accent-color, #2563eb);
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+            }
+            .link-tool-row select:focus {
                 border-color: var(--accent-color, #2563eb);
                 box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
             }
@@ -492,12 +919,13 @@
                 overflow-y: auto;
                 display: none;
             }
-            .link-output.show { display: block; }
+            .link-output.show { display: block; animation: popIn 180ms ease both; }
             .link-output.ok { color: #1a9c3a; }
             .link-output.err { color: #c0392b; }
 
             .settings-surface {
                 display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
                 gap: 14px;
             }
             .settings-note {
@@ -512,6 +940,21 @@
             <!-- ===== Sidebar ===== -->
             <aside class="app-sidebar">
                 <div class="sidebar-title normaltext">Windows Cleaner Next</div>
+                <div class="sidebar-disk">
+                    <div class="sidebar-disk-card">
+                        <div class="sidebar-disk-head normaltext">
+                            <span class="sidebar-disk-label">C 盘空间</span>
+                            <span class="sidebar-disk-value" id="c-drive-percent">查询中...</span>
+                        </div>
+                        <div class="sidebar-disk-bar" aria-label="C盘占用条">
+                            <div class="sidebar-disk-fill" id="c-drive-fill"></div>
+                        </div>
+                        <div class="sidebar-disk-foot normaltext">
+                            <span id="c-drive-used">--</span>
+                            <span id="c-drive-free">--</span>
+                        </div>
+                    </div>
+                </div>
                 <nav class="sidebar-nav">
                     <button class="sidebar-nav-item active normaltext" data-tab="clean">
                         <span class="nav-icon">&#x1F5D1;</span> 清理
@@ -529,7 +972,7 @@
                         <span class="nav-icon">&#x2139;</span> 关于
                     </button>
                 </nav>
-                <div class="sidebar-footer normaltext">v2.3.2</div>
+                <div class="sidebar-footer normaltext">v2.11.4</div>
             </aside>
 
             <!-- ===== Content ===== -->
@@ -564,19 +1007,28 @@
                         </div>
                     </div>
 
-                    <div class="progress-bar-wrap" id="progress-wrap">
-                        <div class="progress-bar-fill" id="progress-fill"></div>
-                    </div>
-
                     <div class="action-bar">
-                        <button onclick="selectAll()">全选</button>
-                        <button onclick="deselectAll()">取消全选</button>
-                        <button onclick="selectRecommended()">推荐清理</button>
-                        <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
+                        <div class="bottom-actions" id="bottom-actions">
+                            <button onclick="selectAll()">全选</button>
+                            <button onclick="deselectAll()">取消全选</button>
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                                <div class="preset-split">
+                                    <button id="btn-select-preset" class="preset-split-main" onclick="applyPresetByName(getSelectedPresetName(), true)">推荐清理</button>
+                                    <button class="preset-split-toggle" onclick="togglePresetMenu(event)">&#9662;</button>
+                                    <div id="preset-menu" class="preset-menu"></div>
+                                </div>
+                                <button onclick="saveCurrentSelectionAsPreset()">保存配置</button>
+                            </div>
+                            <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
+                        </div>
+                        <div class="run-overlay" id="run-overlay">
+                            <div class="run-fill" id="run-fill"></div>
+                            <span id="run-overlay-text">运行中...</span>
+                        </div>
                     </div>
 
                     <div class="output-section" id="output-section">
-                        <div class="output-header normaltext">输出日志</div>
+                        <div class="output-header normaltext">运行日志</div>
                         <div class="output-content" id="output-content">就绪。选中工具后点击"运行选中"。</div>
                     </div>
                 </div>
@@ -649,39 +1101,48 @@
                     </div>
 
                     <div class="settings-surface">
-                    <div class="link-tool">
-                        <h3 class="normaltext">外观</h3>
-                        <div class="link-tool-row">
-                            <label class="normaltext">主题模式</label>
-                            <div class="link-tool-type">
-                                <button class="link-type-btn active" data-theme="system">跟随系统</button>
-                                <button class="link-type-btn" data-theme="light">浅色</button>
-                                <button class="link-type-btn" data-theme="dark">深色</button>
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F58C;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">外观</h3>
+                                <div class="link-tool-row">
+                                    <label class="normaltext">主题模式</label>
+                                    <div class="link-tool-type">
+                                        <button class="link-type-btn active" data-theme="system">跟随系统</button>
+                                        <button class="link-type-btn" data-theme="light">浅色</button>
+                                        <button class="link-type-btn" data-theme="dark">深色</button>
+                                    </div>
+                                </div>
+                                <div class="link-tool-row">
+                                    <label class="normaltext">主题色</label>
+                                    <input type="color" id="theme-color" value="#2563eb" />
+                                </div>
                             </div>
                         </div>
-                        <div class="link-tool-row">
-                            <label class="normaltext">主题色</label>
-                            <input type="color" id="theme-color" value="#2563eb" />
-                        </div>
-                    </div>
 
-                    <div class="link-tool">
-                        <h3 class="normaltext">语言</h3>
-                        <div class="link-tool-row">
-                            <label class="normaltext">界面语言</label>
-                            <input type="text" value="简体中文" disabled />
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F4DD;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">语言</h3>
+                                <div class="link-tool-row">
+                                    <label class="normaltext">界面语言</label>
+                                    <input type="text" value="简体中文" disabled />
+                                </div>
+                                <div class="link-output show">当前版本仅提供简体中文界面，后续再补语言切换。</div>
+                            </div>
                         </div>
-                        <div class="link-output show">当前版本仅提供简体中文界面，后续再补语言切换。</div>
-                    </div>
 
-                    <div class="link-tool">
-                        <h3 class="normaltext">窗口行为</h3>
-                        <div class="link-tool-row">
-                            <label class="normaltext">关闭动作</label>
-                            <input type="text" value="直接退出" disabled />
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F5D1;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">窗口行为</h3>
+                                <div class="link-tool-row">
+                                    <label class="normaltext">关闭动作</label>
+                                    <input type="text" value="直接退出" disabled />
+                                </div>
+                                <div class="link-output show">当前点击窗口关闭按钮会直接退出程序。</div>
+                            </div>
                         </div>
-                        <div class="link-output show">当前点击窗口关闭按钮会直接退出程序。</div>
-                    </div>
                     </div>
                 </div>
 
@@ -689,35 +1150,60 @@
                 <div class="tab-panel" id="tab-advanced">
                     <div class="tools-tab-header">
                         <h2 class="normaltext">高级</h2>
-                        <p class="normaltext">系统电源与内存高级设置</p>
+                        <p class="normaltext">系统电源、内存与清理预设管理</p>
                     </div>
 
-                    <!-- Hibernate Toggle -->
-                    <div class="link-tool">
-                        <h3 class="normaltext">休眠开关</h3>
-                        <p class="link-desc normaltext">启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。</p>
-                        <div class="link-tool-row">
-                            <label class="normaltext">当前状态</label>
-                            <span id="hibernate-status" class="normaltext" style="font-weight:600">查询中...</span>
-                        </div>
-                        <div class="link-tool-row">
-                            <button id="btn-hibernate-on" onclick="setHibernate(true)" class="button1">启用休眠</button>
-                            <button id="btn-hibernate-off" onclick="setHibernate(false)" class="button1">禁用休眠</button>
-                        </div>
-                        <div class="link-output" id="hibernate-output"></div>
-                    </div>
-
-                    <!-- Virtual Memory -->
-                    <div class="tool-item" style="margin-top:20px">
-                        <div class="tool-item-icon">&#x1F4C8;</div>
-                        <div class="tool-item-body">
-                            <h3 class="normaltext">虚拟内存管理</h3>
-                            <p class="normaltext">查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改</p>
-                            <div style="margin:8px 0">
-                                <span class="normaltext" style="opacity:0.7">当前配置：</span>
-                                <span id="vm-info" class="normaltext" style="font-weight:600">查询中...</span>
+                    <div class="tools-tab-grid">
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x23F0;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">休眠开关</h3>
+                                <p class="normaltext">启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。</p>
+                                <div class="link-tool-row" style="margin-bottom:8px">
+                                    <label class="normaltext">当前状态</label>
+                                    <span id="hibernate-status" class="normaltext" style="font-weight:600">查询中...</span>
+                                </div>
+                                <div class="link-tool-row">
+                                    <button id="btn-hibernate-on" onclick="setHibernate(true)" class="button1">启用休眠</button>
+                                    <button id="btn-hibernate-off" onclick="setHibernate(false)" class="button1">禁用休眠</button>
+                                </div>
+                                <div class="link-output" id="hibernate-output"></div>
                             </div>
-                            <a href="#" onclick="openVirtualMemorySettings()" class="normaltext">打开系统设置 &rarr;</a>
+                        </div>
+
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F4C8;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">虚拟内存管理</h3>
+                                <p class="normaltext">查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改</p>
+                                <div style="margin:8px 0">
+                                    <span class="normaltext" style="opacity:0.7">当前配置：</span>
+                                    <span id="vm-info" class="normaltext" style="font-weight:600">查询中...</span>
+                                </div>
+                                <a href="#" onclick="openVirtualMemorySettings()" class="normaltext">打开系统设置 &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-item-icon">&#x1F4BE;</div>
+                            <div class="tool-item-body">
+                                <h3 class="normaltext">清理预设管理</h3>
+                                <p class="normaltext">这里管理保存到设置里的清理预设。当前启用的预设会同步到主界面的“推荐清理”下拉菜单。</p>
+                <div class="link-tool-row" style="margin-bottom:8px">
+                    <label class="normaltext">当前预设</label>
+                    <div class="preset-manage">
+                        <button id="preset-manage-btn" class="preset-manage-main" onclick="toggleManagePresetMenu(event)">推荐清理</button>
+                        <button class="preset-manage-toggle" aria-label="展开预设菜单" onclick="toggleManagePresetMenu(event)">&#9662;</button>
+                        <div id="preset-manage-menu" class="preset-manage-menu"></div>
+                    </div>
+                </div>
+                                <div class="link-tool-row">
+                                    <button onclick="selectRecommended()">应用推荐清理</button>
+                                    <button onclick="saveCurrentSelectionAsPreset()">保存当前勾选</button>
+                                    <button onclick="renamePreset(getManagedPresetName())">重命名</button>
+                                    <button onclick="deletePreset(getManagedPresetName())">删除</button>
+                                </div>
+                                <div class="link-output show">只保存勾选状态；“推荐清理”本身也是一个预设名字。</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -734,7 +1220,7 @@
                             <h3 class="normaltext">软件</h3>
                             <div class="link-tool-row">
                                 <label class="normaltext">当前版本</label>
-                                <span id="about-version" class="normaltext" style="font-weight:600">2.3.3</span>
+                                <span id="about-version" class="normaltext" style="font-weight:600">2.11.4</span>
                             </div>
                             <div class="link-tool-row">
                                 <button id="btn-check-update" onclick="checkUpdate()" class="button1">检查更新</button>
@@ -755,6 +1241,17 @@
                     </div>
                 </div>
             </main>
+        </div>
+        <div id="dialog-overlay" class="dialog-overlay" onclick="dismissDialog(event)">
+            <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onclick="event.stopPropagation()">
+                <div id="dialog-title" class="dialog-title normaltext">提示</div>
+                <div id="dialog-body" class="dialog-body normaltext"></div>
+                <input id="dialog-input" class="dialog-input" type="text" style="display:none" />
+                <div class="dialog-actions">
+                    <button id="dialog-cancel" onclick="closeDialog(false)">取消</button>
+                    <button id="dialog-ok" onclick="closeDialog(true)">确定</button>
+                </div>
+            </div>
         </div>
     </body>
     <script>
@@ -811,10 +1308,385 @@
             window.starcolor = color;
         }
 
+        function showDialog(options) {
+            return new Promise(function(resolve) {
+                window._dialogResolve = resolve;
+                window._dialogMode = options && options.input ? 'input' : 'confirm';
+                window._dialogKeyHandler = null;
+                window._dialogWindowKeyHandler = null;
+                window._dialogClosing = false;
+                var enterToOkOnly = !!(options && options.okOnly);
+                var overlay = document.getElementById('dialog-overlay');
+                var title = document.getElementById('dialog-title');
+                var body = document.getElementById('dialog-body');
+                var input = document.getElementById('dialog-input');
+                var ok = document.getElementById('dialog-ok');
+                var cancel = document.getElementById('dialog-cancel');
+                var okOnly = !!(options && options.okOnly);
+
+                title.textContent = (options && options.title) || '提示';
+                body.textContent = (options && options.message) || '';
+
+                if (window._dialogMode === 'input') {
+                    input.style.display = 'block';
+                    input.value = (options && options.value) || '';
+                    input.placeholder = (options && options.placeholder) || '';
+                    ok.textContent = '确定';
+                    cancel.textContent = '取消';
+                    window._dialogKeyHandler = function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            closeDialog(true);
+                        }
+                    };
+                    input.addEventListener('keydown', window._dialogKeyHandler);
+                } else {
+                    input.style.display = 'none';
+                    ok.textContent = '确定';
+                    cancel.style.display = okOnly ? 'none' : 'inline-flex';
+                    cancel.textContent = '取消';
+                    if (enterToOkOnly) {
+                        window._dialogWindowKeyHandler = function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            closeDialog(true);
+                        }
+                    };
+                        window.addEventListener('keydown', window._dialogWindowKeyHandler, true);
+                    }
+                }
+
+                overlay.classList.remove('closing');
+                overlay.classList.add('show');
+                setTimeout(function() { if (window._dialogMode === 'input') input.focus(); }, 0);
+            });
+        }
+
+        function finishDialogClose(overlay) {
+            if (!overlay) return;
+            overlay.classList.remove('show');
+            overlay.classList.remove('closing');
+        }
+
+        function closeDialog(result) {
+            var overlay = document.getElementById('dialog-overlay');
+            var input = document.getElementById('dialog-input');
+            var cancel = document.getElementById('dialog-cancel');
+            var keyHandler = window._dialogKeyHandler;
+            var windowKeyHandler = window._dialogWindowKeyHandler;
+            if (!overlay) return;
+            if (cancel) cancel.style.display = 'inline-flex';
+            if (input && keyHandler) {
+                input.removeEventListener('keydown', keyHandler);
+            }
+            if (windowKeyHandler) {
+                window.removeEventListener('keydown', windowKeyHandler, true);
+            }
+            window._dialogKeyHandler = null;
+            window._dialogWindowKeyHandler = null;
+            if (!window._dialogClosing) {
+                window._dialogClosing = true;
+                overlay.classList.add('closing');
+                window.setTimeout(function() {
+                    finishDialogClose(overlay);
+                    window._dialogClosing = false;
+                }, 180);
+            }
+            var resolve = window._dialogResolve;
+            window._dialogResolve = null;
+            if (resolve) {
+                if (window._dialogMode === 'input') {
+                    resolve(result ? input.value : null);
+                } else {
+                    resolve(!!result);
+                }
+            }
+        }
+
+        function dismissDialog(event) {
+            if (event && event.target && event.target.id === 'dialog-overlay') {
+                closeDialog(false);
+            }
+        }
+
+        function promptDialog(title, message, value, placeholder) {
+            return showDialog({ title: title, message: message, input: true, value: value, placeholder: placeholder });
+        }
+
+        function confirmDialog(title, message) {
+            return showDialog({ title: title, message: message, input: false });
+        }
+
+        function alertDialog(title, message) {
+            return showDialog({ title: title, message: message, input: false, okOnly: true }).then(function() { return true; });
+        }
+
         var appSettings = {
             themeMode: 'system',
-            accentColor: '#2563eb'
+            accentColor: '#2563eb',
+            cleaningPresets: {
+                '推荐清理': null
+            },
+            activeCleaningPreset: '推荐清理'
         };
+
+        function getDefaultRecommendedPresetState() {
+            var state = {};
+            tools.forEach(function(t) {
+                var checked = (t.id !== 'clean_browser_cache');
+                if (t.id === 'clean_nvidia') {
+                    checked = checked && !!window._nvidiaInstalled;
+                }
+                state[t.id] = checked;
+            });
+            return state;
+        }
+
+        function clonePresetState(state) {
+            var cloned = {};
+            tools.forEach(function(t) {
+                cloned[t.id] = !!(state && state[t.id]);
+            });
+            return cloned;
+        }
+
+        function getSelectedPresetName() {
+            return appSettings.activeCleaningPreset || '推荐清理';
+        }
+
+        function getPresetNames() {
+            return Object.keys(appSettings.cleaningPresets || {});
+        }
+
+        function ensurePresetExists(name) {
+            if (!name) name = '推荐清理';
+            if (!appSettings.cleaningPresets[name]) {
+                appSettings.cleaningPresets[name] = name === '推荐清理' ? getDefaultRecommendedPresetState() : clonePresetState(null);
+            }
+        }
+
+        function saveSettings() {
+            return saveAppSettings();
+        }
+
+        function syncPresetControls() {
+            var menu = document.getElementById('preset-menu');
+            var manageMenu = document.getElementById('preset-manage-menu');
+            var manageSelect = document.getElementById('preset-manage-select');
+            var names = getPresetNames();
+            var active = getSelectedPresetName();
+            var managed = getManagedPresetName();
+
+            if (menu) {
+                menu.innerHTML = '';
+                names.forEach(function(name) {
+                    var item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'preset-menu-item';
+                    item.textContent = name;
+                    item.addEventListener('click', function() {
+                        applyPresetByName(name, true);
+                        hidePresetMenu();
+                    });
+                    menu.appendChild(item);
+                });
+            }
+
+            if (manageMenu) {
+                manageMenu.innerHTML = '';
+                names.forEach(function(name) {
+                    var item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'preset-menu-item';
+                    item.textContent = name;
+                    item.addEventListener('click', function() {
+                        setManagedPresetName(name);
+                        hideManagePresetMenu();
+                    });
+                    manageMenu.appendChild(item);
+                });
+            }
+
+            if (manageSelect) {
+                manageSelect.innerHTML = '';
+                names.forEach(function(name) {
+                    var option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    if (name === managed) option.selected = true;
+                    manageSelect.appendChild(option);
+                });
+                manageSelect.value = managed;
+            }
+
+            var btn = document.getElementById('btn-select-preset');
+            if (btn) btn.textContent = active;
+            var activeLabel = document.getElementById('active-preset-label');
+            if (activeLabel) activeLabel.textContent = active;
+            var manageBtn = document.getElementById('preset-manage-btn');
+            if (manageBtn) manageBtn.textContent = managed;
+        }
+
+        function hidePresetMenu() {
+            var menu = document.getElementById('preset-menu');
+            if (menu) {
+                menu.classList.remove('show');
+                menu.classList.remove('flip-up');
+                menu.style.maxHeight = '';
+            }
+        }
+
+        function togglePresetMenu(event) {
+            if (event) event.stopPropagation();
+            var menu = document.getElementById('preset-menu');
+            if (!menu) return;
+            if (!menu.classList.contains('show')) {
+                var rect = menu.parentElement.getBoundingClientRect();
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var spaceAbove = rect.top;
+                menu.classList.toggle('flip-up', spaceBelow < 220 && spaceAbove > spaceBelow);
+                var available = menu.classList.contains('flip-up') ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
+                menu.style.maxHeight = available + 'px';
+            }
+            menu.classList.toggle('show');
+        }
+
+        function hideManagePresetMenu() {
+            var menu = document.getElementById('preset-manage-menu');
+            if (menu) {
+                menu.classList.remove('show');
+                menu.classList.remove('flip-up');
+                menu.style.maxHeight = '';
+            }
+        }
+
+        function toggleManagePresetMenu(event) {
+            if (event) event.stopPropagation();
+            var menu = document.getElementById('preset-manage-menu');
+            if (!menu) return;
+            if (!menu.classList.contains('show')) {
+                var rect = menu.parentElement.getBoundingClientRect();
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var spaceAbove = rect.top;
+                menu.classList.toggle('flip-up', spaceBelow < 220 && spaceAbove > spaceBelow);
+                var available = menu.classList.contains('flip-up') ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
+                menu.style.maxHeight = available + 'px';
+            }
+            menu.classList.toggle('show');
+            var btn = document.getElementById('preset-manage-btn');
+            if (btn) btn.classList.toggle('active', menu.classList.contains('show'));
+        }
+
+        function handleGlobalMenuDismiss(event) {
+            var target = event && event.target;
+            var presetWrap = document.querySelector('.preset-split');
+            var manageWrap = document.querySelector('.preset-manage');
+            var presetMenu = document.getElementById('preset-menu');
+            var manageMenu = document.getElementById('preset-manage-menu');
+            if (!target) {
+                hidePresetMenu();
+                hideManagePresetMenu();
+                return;
+            }
+            if (presetWrap && presetWrap.contains(target)) return;
+            if (manageWrap && manageWrap.contains(target)) return;
+            if (presetMenu && presetMenu.contains(target)) return;
+            if (manageMenu && manageMenu.contains(target)) return;
+            hidePresetMenu();
+            hideManagePresetMenu();
+        }
+
+        function getManagedPresetName() {
+            return appSettings.activeCleaningPreset || '推荐清理';
+        }
+
+        function setManagedPresetName(name) {
+            appSettings.activeCleaningPreset = name || '推荐清理';
+            syncPresetControls();
+        }
+
+        async function applyManagedPreset(name, persist) {
+            await applyPresetByName(name, persist);
+            setManagedPresetName(name);
+        }
+
+        function applyPresetState(state) {
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                if (!cb) return;
+                cb.checked = !!(state && state[t.id]);
+                cb.dispatchEvent(new Event('change'));
+            });
+        }
+
+        function getCurrentSelectionState() {
+            var state = {};
+            tools.forEach(function(t) {
+                var cb = document.getElementById('cb-' + t.id);
+                state[t.id] = !!(cb && cb.checked);
+            });
+            return state;
+        }
+
+        async function applyPresetByName(name, persist) {
+            ensurePresetExists(name);
+            appSettings.activeCleaningPreset = name;
+            applyPresetState(appSettings.cleaningPresets[name]);
+            syncPresetControls();
+            if (persist) await saveSettings();
+        }
+
+        async function saveCurrentSelectionAsPreset() {
+            if (!window._appPath) return;
+            var presetName = await promptDialog('保存配置', '请输入配置名称：', getSelectedPresetName() || '我的配置', '例如：日常清理');
+            if (!presetName) return;
+            presetName = presetName.trim();
+            if (!presetName) return;
+
+            appSettings.cleaningPresets = appSettings.cleaningPresets || {};
+            appSettings.cleaningPresets[presetName] = getCurrentSelectionState();
+            appSettings.activeCleaningPreset = presetName;
+            syncPresetControls();
+            await saveSettings();
+        }
+
+        async function renamePreset(oldName) {
+            if (!oldName || oldName === '推荐清理') return;
+            var newName = await promptDialog('重命名配置', '请输入新的配置名称：', oldName, '新的配置名称');
+            if (!newName) return;
+            newName = newName.trim();
+            if (!newName || newName === oldName) return;
+            if (appSettings.cleaningPresets[newName]) {
+                await alertDialog('提示', '已存在同名配置。');
+                return;
+            }
+            appSettings.cleaningPresets[newName] = appSettings.cleaningPresets[oldName];
+            delete appSettings.cleaningPresets[oldName];
+            if (appSettings.activeCleaningPreset === oldName) {
+                appSettings.activeCleaningPreset = newName;
+            }
+            if (getManagedPresetName() === oldName) {
+                setManagedPresetName(newName);
+            }
+            syncPresetControls();
+            await saveSettings();
+        }
+
+        async function deletePreset(name) {
+            if (!name || name === '推荐清理') return;
+            var ok = await confirmDialog('删除配置', '确定删除配置 "' + name + '" 吗？');
+            if (!ok) return;
+            delete appSettings.cleaningPresets[name];
+            if (appSettings.activeCleaningPreset === name) {
+                appSettings.activeCleaningPreset = '推荐清理';
+                await applyPresetByName('推荐清理', false);
+            }
+            if (getManagedPresetName() === name) {
+                setManagedPresetName(appSettings.activeCleaningPreset);
+            }
+            syncPresetControls();
+            await saveSettings();
+        }
 
         async function loadAppSettings() {
             try {
@@ -825,6 +1697,12 @@
                 if (parsed && typeof parsed === 'object') {
                     appSettings.themeMode = parsed.themeMode || appSettings.themeMode;
                     appSettings.accentColor = parsed.accentColor || appSettings.accentColor;
+                    if (parsed.cleaningPresets && typeof parsed.cleaningPresets === 'object') {
+                        appSettings.cleaningPresets = parsed.cleaningPresets;
+                    }
+                    if (parsed.activeCleaningPreset) {
+                        appSettings.activeCleaningPreset = parsed.activeCleaningPreset;
+                    }
                 }
             } catch (e) {
                 window._settingsPath = window._settingsPath || '';
@@ -956,6 +1834,7 @@
                     var tabId = item.getAttribute('data-tab');
                     panels.forEach(function(p) { p.classList.remove('active'); });
                     document.getElementById('tab-' + tabId).classList.add('active');
+                    updateActionBarAttachment();
                 });
             });
         })();
@@ -1170,6 +2049,7 @@
                 var cb = document.getElementById('cb-' + t.id);
                 if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
             });
+            syncPresetControls();
         }
 
         function deselectAll() {
@@ -1177,20 +2057,12 @@
                 var cb = document.getElementById('cb-' + t.id);
                 if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
             });
+            syncPresetControls();
         }
 
         function selectRecommended() {
-            tools.forEach(function(t) {
-                var cb = document.getElementById('cb-' + t.id);
-                if (cb) {
-                    var checked = (t.id !== 'clean_browser_cache');
-                    if (t.id === 'clean_nvidia') {
-                        checked = checked && window._nvidiaInstalled;
-                    }
-                    cb.checked = checked;
-                    cb.dispatchEvent(new Event('change'));
-                }
-            });
+            applyPresetByName('推荐清理', true);
+            hidePresetMenu();
         }
 
         function getSelectedIds() {
@@ -1208,6 +2080,78 @@
             btn.textContent = count > 0 ? '运行选中 (' + count + ')' : '运行选中';
         }
 
+        async function getCDriveUsageSnapshot() {
+            var raw = await sendToBackend('get_c_drive_usage');
+            var data = JSON.parse((raw || '').trim());
+            if (Array.isArray(data)) data = data[0] || {};
+            return {
+                total: Number(data.Size || 0),
+                free: Number(data.FreeSpace || 0)
+            };
+        }
+
+        function formatBytesShort(bytes) {
+            if (!isFinite(bytes) || bytes <= 0) return '0 GB';
+            var gb = bytes / (1024 * 1024 * 1024);
+            return (gb >= 10 ? gb.toFixed(0) : gb.toFixed(1)) + ' GB';
+        }
+
+        function parseColorToRgb(color) {
+            if (!color) return null;
+            var c = color.trim().toLowerCase();
+            if (c[0] === '#') {
+                var hex = c.slice(1);
+                if (hex.length === 3) {
+                    hex = hex.split('').map(function(ch) { return ch + ch; }).join('');
+                }
+                if (hex.length !== 6) return null;
+                var num = parseInt(hex, 16);
+                return {
+                    r: (num >> 16) & 255,
+                    g: (num >> 8) & 255,
+                    b: num & 255
+                };
+            }
+            var m = c.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/);
+            if (m) {
+                return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
+            }
+            return null;
+        }
+
+        function isGrayishColor(color) {
+            var rgb = parseColorToRgb(color);
+            if (!rgb) return false;
+            var avg = (rgb.r + rgb.g + rgb.b) / 3;
+            var maxDiff = Math.max(
+                Math.abs(rgb.r - avg),
+                Math.abs(rgb.g - avg),
+                Math.abs(rgb.b - avg)
+            );
+            return maxDiff <= 18;
+        }
+
+        function buildCleanupStatsMessage(before, after) {
+            if (!before || !after || !before.total || !after.total) {
+                return '清理完成。';
+            }
+            var beforeUsed = before.total - before.free;
+            var afterUsed = after.total - after.free;
+            var freed = Math.max(0, beforeUsed - afterUsed);
+            var usedBeforePct = Math.max(0, Math.min(100, beforeUsed / before.total * 100));
+            var usedAfterPct = Math.max(0, Math.min(100, afterUsed / after.total * 100));
+            return [
+                '清理完成。',
+                'C 盘清理前已用：' + formatBytesShort(beforeUsed) + '（' + usedBeforePct.toFixed(0) + '%）',
+                'C 盘清理后已用：' + formatBytesShort(afterUsed) + '（' + usedAfterPct.toFixed(0) + '%）',
+                '本次释放空间：' + formatBytesShort(freed)
+            ].join('\n');
+        }
+
+        function updateActionBarAttachment() {
+            return;
+        }
+
         // ===== Tool execution =====
         function runSingleTool(toolId) {
             if (isRunning || !window._appPath) return;
@@ -1220,6 +2164,28 @@
             processQueue();
         }
 
+        function updateRunOverlayProgress(current, total) {
+            var bar = document.getElementById('run-overlay');
+            var fill = document.getElementById('run-fill');
+            var actionBar = document.querySelector('.action-bar');
+            if (!bar || !fill || !actionBar) return;
+            if (total <= 0) {
+                fill.style.width = '0%';
+                return;
+            }
+            var pct = Math.max(0, Math.min(100, (current / total) * 100));
+            fill.style.width = pct.toFixed(1) + '%';
+            var theme = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            actionBar.setAttribute('data-theme-gray', isGrayishColor(theme) ? '1' : '0');
+        }
+
+        function setRunBarRunning(running) {
+            var actionBar = document.querySelector('.action-bar');
+            if (!actionBar) return;
+            actionBar.classList.toggle('running', !!running);
+            if (!running) actionBar.removeAttribute('data-theme-gray');
+        }
+
         function runSelected() {
             var ids = getSelectedIds();
             if (ids.length === 0) {
@@ -1227,12 +2193,28 @@
                 return;
             }
             if (isRunning || !window._appPath) return;
+            var runBtn = document.getElementById('btn-run-selected');
+            if (runBtn) {
+                runBtn.textContent = '运行中...';
+                runBtn.classList.remove('pressed');
+                void runBtn.offsetWidth;
+                runBtn.classList.add('pressed');
+                setTimeout(function() { runBtn.classList.remove('pressed'); }, 360);
+            }
+            window._cleanupStartSnapshot = null;
+            getCDriveUsageSnapshot().then(function(snapshot) {
+                window._cleanupStartSnapshot = snapshot;
+            }).catch(function() {
+                window._cleanupStartSnapshot = null;
+            });
             runQueue = ids.slice();
             window._queueTotal = runQueue.length;
             window._queueCompleted = 0;
             window._queueSucceeded = 0;
             window._queueFailed = 0;
             isRunning = true;
+            setRunBarRunning(true);
+            updateRunOverlayProgress(0, window._queueTotal);
             processQueue();
         }
 
@@ -1290,22 +2272,10 @@
             section.scrollTop = section.scrollHeight;
         }
 
-        function updateProgress(current, total) {
-            var wrap = document.getElementById('progress-wrap');
-            var fill = document.getElementById('progress-fill');
-            if (total === 0) {
-                wrap.style.display = 'none';
-                fill.style.width = '0';
-                return;
-            }
-            wrap.style.display = 'block';
-            fill.style.width = Math.round((current / total) * 100) + '%';
-        }
-
         async function processQueue() {
             if (runQueue.length === 0) {
                 isRunning = false;
-                updateProgress(window._queueCompleted, window._queueTotal);
+                setRunBarRunning(false);
                 var total = window._queueTotal || 0;
                 var successCount = window._queueSucceeded || 0;
                 var failedCount = window._queueFailed || 0;
@@ -1319,6 +2289,15 @@
                 }
                 document.getElementById('btn-run-selected').textContent = '运行选中';
                 setTimeout(resetAllToolButtons, 1500);
+                try {
+                    var afterSnapshot = await getCDriveUsageSnapshot();
+                    var beforeSnapshot = window._cleanupStartSnapshot;
+                    await loadCDriveUsage();
+                    await alertDialog('清理结果', buildCleanupStatsMessage(beforeSnapshot, afterSnapshot));
+                } catch(e) {
+                    await loadCDriveUsage();
+                    await alertDialog('清理结果', '清理完成。');
+                }
                 return;
             }
 
@@ -1327,7 +2306,6 @@
             var toolPath = pathUtil.join(window._appPath, 'Tools', toolId + '.exe');
 
             setToolStatus(toolId, 'running');
-            updateProgress(window._queueCompleted, window._queueTotal);
             logOutput('正在运行: ' + toolName + '...');
 
             var raw = '';
@@ -1338,6 +2316,7 @@
             }
 
             window._queueCompleted++;
+            updateRunOverlayProgress(window._queueCompleted, window._queueTotal);
 
             var result = parseOutput(toolId, raw);
 
@@ -1350,7 +2329,6 @@
             }
 
             logOutput(toolName + ': ' + result.summary, result.success ? 'ok' : 'err');
-            updateProgress(window._queueCompleted, window._queueTotal);
             processQueue();
         }
 
@@ -1595,6 +2573,42 @@
             }
         }
 
+        function formatBytes(bytes) {
+            if (!isFinite(bytes) || bytes <= 0) return '0 GB';
+            var gb = bytes / (1024 * 1024 * 1024);
+            if (gb >= 10) return gb.toFixed(0) + ' GB';
+            return gb.toFixed(1) + ' GB';
+        }
+
+        async function loadCDriveUsage() {
+            var fill = document.getElementById('c-drive-fill');
+            var percentEl = document.getElementById('c-drive-percent');
+            var usedEl = document.getElementById('c-drive-used');
+            var freeEl = document.getElementById('c-drive-free');
+            if (!fill || !percentEl || !usedEl || !freeEl) return;
+
+            try {
+                var raw = await sendToBackend('get_c_drive_usage');
+                var data = JSON.parse(raw);
+                var total = Number(data.Size || 0);
+                var free = Number(data.FreeSpace || 0);
+                if (!total || total <= 0) throw new Error('invalid size');
+                var used = total - free;
+                var usedPct = Math.max(0, Math.min(100, (used / total) * 100));
+                fill.style.width = usedPct.toFixed(1) + '%';
+                fill.classList.toggle('warn', usedPct >= 85);
+                percentEl.textContent = usedPct.toFixed(0) + '% 已用';
+                usedEl.textContent = '已用 ' + formatBytes(used);
+                freeEl.textContent = '剩余 ' + formatBytes(free);
+            } catch(e) {
+                percentEl.textContent = '查询失败';
+                usedEl.textContent = '--';
+                freeEl.textContent = '--';
+                fill.style.width = '0%';
+                fill.classList.remove('warn');
+            }
+        }
+
         async function initApp() {
             try {
                 if (typeof sendToBackend !== 'function') {
@@ -1618,15 +2632,26 @@
             await loadAppSettings();
             buildUI();
             setupSettingsControls();
+            await detectNvidia();
+            await loadCDriveUsage();
+            setInterval(loadCDriveUsage, 60000);
+            ensurePresetExists('推荐清理');
+            if (!appSettings.cleaningPresets[appSettings.activeCleaningPreset]) {
+                appSettings.activeCleaningPreset = '推荐清理';
+            }
+            await applyPresetByName(appSettings.activeCleaningPreset || '推荐清理', false);
+            setManagedPresetName(appSettings.activeCleaningPreset || '推荐清理');
+            syncPresetControls();
             loadScriptFromConfig();
-            detectNvidia();
+            updateActionBarAttachment();
         }
 
+        var actionBarAttachmentTick = 0;
+        function scheduleActionBarAttachmentUpdate() {
+            return;
+        }
+
+        document.addEventListener('pointerdown', handleGlobalMenuDismiss, true);
         initApp();
     </script>
 </html>
-
-
-
-
-

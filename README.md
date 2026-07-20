@@ -105,6 +105,7 @@ npm run tauri build
 构建产物会输出到 `src-tauri/target/release/`。
 
 Release builds and downloadable artifacts are code signed through the SignPath Foundation program.
+If SignPath approval is still pending, the release workflow publishes the unsigned MSI and NSIS assets first.
 
 ## Microsoft Store 发布
 

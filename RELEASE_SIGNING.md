@@ -7,8 +7,8 @@ This repository is prepared for GitHub Release packaging with optional free sign
 - Builds Windows release bundles on GitHub-hosted Windows runners
 - Uploads the MSI and NSIS installer artifacts
 - If SignPath secrets are configured, submits both artifacts for signing
-- Publishes the signed assets to the GitHub Release tag
-- If SignPath is not configured yet, it still publishes the unsigned assets
+- Publishes the signed assets to the GitHub Release tag when SignPath is available
+- If SignPath is not approved yet, it still publishes the unsigned assets first
 
 ## Required SignPath setup
 

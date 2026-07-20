@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Windows Cleaner Next - 一款基于 Tauri 2 + Rust + C++ 的 Windows 清理工具，轻量、清爽、少步骤。" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta property="og:title" content="Windows Cleaner Next" />
+  <meta property="og:description" content="轻量、清爽、少步骤的 Windows 清理工具官网" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./dist/app-icon.png" />
+  <title>Windows Cleaner Next | 官方网站</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --bg-soft: rgba(12, 22, 39, 0.72);
+      --card: rgba(12, 22, 39, 0.78);
+      --card-strong: rgba(18, 30, 51, 0.92);
+      --line: rgba(148, 163, 184, 0.18);
+      --line-strong: rgba(148, 163, 184, 0.28);
+      --text: #edf4ff;
+      --muted: rgba(226, 232, 240, 0.72);
+      --soft: rgba(226, 232, 240, 0.5);
+      --accent: #4ea1ff;
+      --accent-2: #57e1c1;
+      --accent-3: #f8d06b;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI Variable Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(78, 161, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(87, 225, 193, 0.16), transparent 24%),
+        radial-gradient(circle at 65% 78%, rgba(248, 208, 107, 0.08), transparent 22%),
+        linear-gradient(180deg, #06101d 0%, #081423 48%, #050b14 100%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.08));
+      opacity: 0.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 30;
+    }
+    .progress > span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 24px rgba(78, 161, 255, 0.55);
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      backdrop-filter: blur(18px);
+      background: rgba(6, 14, 25, 0.72);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 45%),
+        linear-gradient(145deg, rgba(78, 161, 255, 0.96), rgba(87, 225, 193, 0.92));
+      box-shadow: 0 10px 28px rgba(78, 161, 255, 0.25);
+      flex: 0 0 auto;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .brand-badge img {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: 0.98rem;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-text span {
+      display: block;
+      color: var(--soft);
+      font-size: 0.84rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a {
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 8px 10px;
+      border-radius: 999px;
+      transition: 180ms ease;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .hero {
+      position: relative;
+      padding: 74px 0 34px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .eyebrow i {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 18px rgba(78, 161, 255, 0.7);
+    }
+
+    h1 {
+      margin: 18px 0 16px;
+      font-size: clamp(3rem, 6vw, 5.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .lede {
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: clamp(1.02rem, 1.7vw, 1.16rem);
+      line-height: 1.85;
+      margin: 0 0 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 26px 0 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition: 180ms ease;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #68b2ff);
+      color: #06101d;
+      box-shadow: 0 14px 34px rgba(78, 161, 255, 0.24);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(148, 163, 184, 0.18);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(148, 163, 184, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .preview {
+      position: relative;
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(78, 161, 255, 0.22), transparent 36%),
+        radial-gradient(circle at 100% 28%, rgba(87, 225, 193, 0.16), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 520px;
+      padding: 26px;
+    }
+
+    .preview::after {
+      content: "";
+      position: absolute;
+      inset: auto -35% -25% auto;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(248, 208, 107, 0.2), transparent 65%);
+      filter: blur(10px);
+    }
+
+    .window {
+      position: relative;
+      border-radius: 24px;
+      background: rgba(5, 13, 24, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      overflow: hidden;
+      height: 100%;
+      min-height: 468px;
+    }
+
+    .window-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .window-head span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .dashboard {
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 2rem;
+      letter-spacing: -0.04em;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--soft);
+      font-size: 0.92rem;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    .scan-panel {
+      border-radius: 22px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(78, 161, 255, 0.12), rgba(255,255,255,0.03));
+      border: 1px solid rgba(78, 161, 255, 0.18);
+    }
+
+    .scan-panel h3,
+    .scan-panel p {
+      margin: 0;
+    }
+
+    .scan-panel p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin-top: 8px;
+    }
+
+    .scan-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 110px 1fr 56px;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      overflow: hidden;
+    }
+
+    .bar-track > span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 20px rgba(78, 161, 255, 0.3);
+    }
+
+    .section {
+      padding: 34px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.55rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p {
+      max-width: 56ch;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.features {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.benefits {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(14px);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(78, 161, 255, 0.25);
+      background: var(--card-strong);
+    }
+
+    .card .icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, rgba(78, 161, 255, 0.18), rgba(87, 225, 193, 0.16));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .step {
+      position: relative;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .step::before {
+      content: attr(data-no);
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #06101d;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 1.04rem;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .list li::before {
+      content: "•";
+      color: var(--accent-2);
+      font-size: 1.2rem;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    .cta {
+      margin: 16px 0 10px;
+      padding: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(78, 161, 255, 0.22), transparent 34%),
+        radial-gradient(circle at 84% 20%, rgba(87, 225, 193, 0.16), transparent 24%),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+    }
+
+    .cta h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+      letter-spacing: -0.03em;
+    }
+
+    .cta p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 70ch;
+    }
+
+    footer {
+      padding: 26px 0 48px;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .notes,
+      .grid.features,
+      .grid.benefits,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .preview {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .wrap {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+        gap: 6px;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      h1 {
+        font-size: clamp(2.55rem, 14vw, 4rem);
+      }
+
+      .preview {
+        padding: 16px;
+      }
+
+      .window {
+        min-height: auto;
+      }
+
+      .stat-row {
+        grid-template-columns: 1fr;
+      }
+
+      .bar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top" aria-label="Windows Cleaner Next 首页">
+        <div class="brand-badge">
+          <img src="./dist/app-icon.png" alt="" />
+        </div>
+        <div class="brand-text">
+          <strong>Windows Cleaner Next</strong>
+          <span>官方主页 · GitHub Pages 友好</span>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="页面导航">
+        <a href="#features">功能</a>
+        <a href="#flow">使用方式</a>
+        <a href="#notes">注意事项</a>
+        <a href="#links">项目入口</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="reveal">
+          <div class="eyebrow"><i></i> 基于 Tauri 2 + Rust + C++ 的 Windows 清理工具</div>
+          <h1>更轻，更清爽，更少步骤。</h1>
+          <p class="lede">
+            Windows Cleaner Next 面向日常维护场景，提供系统缓存、临时文件、日志、浏览器缓存等常见清理入口，
+            同时保留工具页和设置页，让你在尽量少的操作里完成一次靠谱的系统整理。
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://github.com/Necream/WindowsCleanerNext-Tauri" target="_blank" rel="noreferrer">前往 GitHub 仓库</a>
+            <a class="btn btn-secondary" href="https://github.com/Necream/WindowsCleanerNext-Tauri/blob/master/README.md" target="_blank" rel="noreferrer">查看使用说明</a>
+          </div>
+          <div class="hero-meta">
+            <span class="pill">Windows 10 / 11</span>
+            <span class="pill">需要管理员权限</span>
+            <span class="pill">Apache-2.0</span>
+          </div>
+        </div>
+
+        <div class="preview reveal" aria-label="产品预览">
+          <div class="window">
+            <div class="window-head">
+              <div class="dots" aria-hidden="true">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+              <span>Windows Cleaner Next</span>
+            </div>
+            <div class="dashboard">
+              <div class="stat-row">
+                <div class="stat">
+                  <strong>3</strong>
+                  <span>主导航分区，清理、工具、设置，结构清楚，不绕弯。</span>
+                </div>
+                <div class="stat">
+                  <strong>12+</strong>
+                  <span>常用清理项，覆盖系统、用户目录和浏览器缓存。</span>
+                </div>
+              </div>
+              <div class="scan-panel">
+                <h3>一眼看懂当前状态</h3>
+                <p>界面按功能分类，清理项可单独勾选，也支持批量执行。适合新手快速上手，也适合熟悉系统维护的用户直接操作。</p>
+                <div class="scan-bars" aria-hidden="true">
+                  <div class="bar">
+                    <span>系统缓存</span>
+                    <div class="bar-track"><span style="width: 82%;"></span></div>
+                    <span>82%</span>
+                  </div>
+                  <div class="bar">
+                    <span>临时文件</span>
+                    <div class="bar-track"><span style="width: 74%;"></span></div>
+                    <span>74%</span>
+                  </div>
+                  <div class="bar">
+                    <span>浏览器缓存</span>
+                    <div class="bar-track"><span style="width: 58%;"></span></div>
+                    <span>58%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card" style="margin: 0; background: rgba(255,255,255,0.03);">
+                <h3 style="margin-top:0;">设计原则</h3>
+                <p>尽量少绑第三方依赖，不把外部二进制深度塞进主程序，降低分发和维护成本。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div>
+            <h2>功能做得直接，入口也尽量直白</h2>
+          </div>
+          <p>官网不堆概念，直接把你最关心的能力摆出来：能清什么、为什么这么设计、怎么开始用。</p>
+        </div>
+
+        <div class="grid features">
+          <article class="card reveal">
+            <div class="icon">✦</div>
+            <h3>清理项覆盖常见场景</h3>
+            <p>包括 Windows 更新缓存、临时文件、系统日志、还原点、预取缓存、内存清理、NVIDIA 日志、用户临时文件和浏览器缓存等。</p>
+          </article>
+          <article class="card reveal">
+            <div class="icon">◎</div>
+            <h3>工具页保留辅助入口</h3>
+            <p>把 `mklink` 链接创建、Mem Reduct CLI 下载引导、打开 Tools 目录等辅助功能集中管理，避免混进主清理流程。</p>
+          </article>
+          <article class="card reveal">
+            <div class="icon">◌</div>
+            <h3>适合新手，也不限制老手</h3>
+            <p>左侧分类、右侧内容的结构明确，清理前先选择，再统一执行，减少误操作概率，也更容易复用日常习惯。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div>
+            <h2>为什么它看起来更“干净”</h2>
+          </div>
+          <p>这部分是项目理念，也是官网想传达的气质：不是把按钮堆满，而是把步骤压缩到最少。</p>
+        </div>
+
+        <div class="grid benefits">
+          <article class="card reveal">
+            <div class="icon">1</div>
+            <h3>更轻量</h3>
+            <p>目标不是做成重型控制台，而是尽量让界面、功能和打包链路都保持简洁。网页端也延续同样原则，尽量单页、少跳转、少噪音。</p>
+          </article>
+          <article class="card reveal">
+            <div class="icon">2</div>
+            <h3>更清爽</h3>
+            <p>分类清楚，视觉层次明确，重点信息优先显示。官网同样把用户最需要知道的内容先放在最显眼的位置。</p>
+          </article>
+          <article class="card reveal">
+            <div class="icon">3</div>
+            <h3>更少步骤</h3>
+            <p>选择清理项、执行、查看结果，尽量不让用户在多个页面里来回折返。这个官网也刻意保持低跳转成本。</p>
+          </article>
+          <article class="card reveal">
+            <div class="icon">4</div>
+            <h3>更少绑定</h3>
+            <p>外部工具通过独立入口提供，不强行耦合到主程序里。这样分发、更新和排障都更轻松。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div>
+            <h2>首次使用很简单</h2>
+          </div>
+          <p>官网放这四步就够了，用户到这里基本已经知道怎么上手。</p>
+        </div>
+
+        <div class="timeline">
+          <div class="step reveal" data-no="1">
+            <h3>启动程序并授权</h3>
+            <p>首次打开时允许管理员权限，保证涉及系统缓存和受限目录的清理项可正常执行。</p>
+          </div>
+          <div class="step reveal" data-no="2">
+            <h3>进入“清理”页</h3>
+            <p>左侧是分类导航，右侧是具体项目。先看清楚，再选择要清理的内容。</p>
+          </div>
+          <div class="step reveal" data-no="3">
+            <h3>勾选目标项目</h3>
+            <p>根据自己的需求选择清理范围。页面默认不强迫全选，避免把不想动的内容一起带上。</p>
+          </div>
+          <div class="step reveal" data-no="4">
+            <h3>点击运行</h3>
+            <p>统一执行后查看输出日志，再决定是否继续做工具页里的辅助操作。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="notes" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div>
+            <h2>使用前建议先看清这些</h2>
+          </div>
+          <p>这些注意事项是为了让页面内容更完整，也能减少你后面发布到 Pages 后的疑问。</p>
+        </div>
+
+        <div class="notes">
+          <div class="card reveal">
+            <h3 style="margin-top:0;">安全与边界</h3>
+            <ul class="list">
+              <li>部分清理项会删除系统缓存或临时数据，这是正常行为。</li>
+              <li>如果文件被占用，个别项目可能提示失败或跳过，这是常见情况。</li>
+              <li>不要手动删除不熟悉的系统目录，尤其是和系统本身相关的路径。</li>
+              <li>建议先查看输出日志，再决定是否继续执行更多清理项。</li>
+            </ul>
+          </div>
+          <div class="card reveal">
+            <h3 style="margin-top:0;">项目信息</h3>
+            <ul class="list">
+              <li>许可证：Apache-2.0</li>
+              <li>适用系统：Windows 10 / 11</li>
+              <li>项目仓库：GitHub</li>
+              <li>网页用途：GitHub Pages 官方站</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="links" class="section">
+      <div class="wrap">
+        <div class="cta reveal">
+          <h2>如果你准备上线 GitHub Pages，这个页面已经能直接用。</h2>
+          <p>
+            我把官网做成单文件 `index.html`，结构和内容都已经朝着 Pages 友好方向处理好了。
+            你只需要把仓库推上去，打开 GitHub Pages，就能先有一个完整的官方主页。
+          </p>
+          <div class="hero-actions" style="margin: 0;">
+            <a class="btn btn-primary" href="https://github.com/Necream/WindowsCleanerNext-Tauri" target="_blank" rel="noreferrer">打开仓库</a>
+            <a class="btn btn-secondary" href="https://github.com/Necream/WindowsCleanerNext-Tauri/blob/master/STORE_PUBLISH.md" target="_blank" rel="noreferrer">查看发布资料</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-row">
+        <div>Windows Cleaner Next 官方网站</div>
+        <div>© <span id="year"></span> Necream · Apache-2.0</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const progressBar = document.getElementById("progress-bar");
+    const year = document.getElementById("year");
+    year.textContent = new Date().getFullYear();
+
+    const updateProgress = () => {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const value = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      progressBar.style.width = `${value}%`;
+    };
+
+    document.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.16 });
+
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>

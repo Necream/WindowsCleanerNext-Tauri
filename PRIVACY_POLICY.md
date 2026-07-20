@@ -1,30 +1,36 @@
 # Privacy Policy
 
-Effective date: July 17, 2026
+**Effective date:** July 20, 2026
 
-Windows Cleaner Next - Tauri is designed to run locally on your device.
+Windows Cleaner Next is designed to keep processing local to your device.
 
-## Data collection
+## What we collect
 
-This application does not intentionally collect, store, or transmit personal data to the developer or any third-party analytics service.
+This application does not intentionally collect, store, or transmit personal data to the developer or to any third-party analytics service.
 
 ## Local processing
 
-- Cleaning operations run on the local machine
-- Settings are stored locally on the device
-- External tools are launched only when the user explicitly requests them
+- Cleaning operations run on the local machine.
+- Settings and preferences are stored locally on the device.
+- External tools or downloads are launched only when you explicitly request them.
 
-## Optional external downloads
+## Logs and diagnostics
 
-The application may show links to external tools or release pages, such as GitHub downloads. Those downloads are initiated by the user and are handled outside the application.
+The application may display operation output and local diagnostic logs to help you understand what happened during a cleaning task. These logs stay on your device unless you choose to share them.
 
-## Logs
+## External links
 
-The application may show operation output and local diagnostic logs to help the user understand what happened during a cleaning task. These logs stay on the local device unless the user chooses to share them.
+The application may show links to GitHub releases, external tools, or related project pages. Those links are initiated by you, and any data handling after leaving the app is governed by the destination site or service.
 
-## Changes to this policy
+## Data retention
 
-If the application later adds telemetry, cloud sync, or other data processing features, this policy will be updated before release.
+Because the app does not collect personal data online, there is no cloud retention period. If the project later adds telemetry, sync, or any other online processing, this policy will be updated before release.
+
+## Your choices
+
+- You can close the app or stop using a feature at any time.
+- You can choose whether to download external tools.
+- You can delete local settings or logs from your own device.
 
 ## Contact
 

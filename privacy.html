@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Windows Cleaner Next 隐私政策" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>隐私政策 | Windows Cleaner Next</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #06101d;
+      --panel: rgba(13, 22, 37, 0.82);
+      --panel-2: rgba(19, 31, 52, 0.9);
+      --line: rgba(148, 163, 184, 0.16);
+      --text: #edf4ff;
+      --muted: rgba(226, 232, 240, 0.72);
+      --soft: rgba(226, 232, 240, 0.5);
+      --accent: #4ea1ff;
+      --accent-2: #57e1c1;
+      --max: 980px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI Variable Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 18%, rgba(78, 161, 255, 0.16), transparent 26%),
+        radial-gradient(circle at 90% 10%, rgba(87, 225, 193, 0.1), transparent 20%),
+        linear-gradient(180deg, #07111f 0%, #050b14 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 54px 54px;
+      opacity: 0.55;
+    }
+
+    a { color: inherit; }
+    .wrap {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(6, 14, 25, 0.74);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 0.98rem;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--soft);
+      font-size: 0.84rem;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 999px;
+      transition: 180ms ease;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+
+    main {
+      padding: 56px 0 44px;
+    }
+
+    .hero {
+      padding: 18px 0 10px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .eyebrow i {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 70ch;
+      font-size: 1.02rem;
+    }
+
+    .panel {
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(16px);
+    }
+
+    .panel + .panel {
+      margin-top: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .panel p,
+    .panel li {
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .panel ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .note {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+
+    footer {
+      padding: 18px 0 42px;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    @media (max-width: 760px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wrap {
+        width: min(var(--max), calc(100% - 24px));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="./index.html">
+        <img src="./dist/app-icon.png" alt="Windows Cleaner Next 图标" />
+        <div>
+          <strong>Windows Cleaner Next</strong>
+          <span>隐私政策</span>
+        </div>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="./index.html">返回首页</a>
+        <a href="https://github.com/Necream/WindowsCleanerNext-Tauri" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div class="eyebrow"><i></i> 生效日期：2026 年 7 月 20 日</div>
+        <h1>Privacy Policy</h1>
+        <p class="lead">
+          Windows Cleaner Next 的设计目标是尽量把处理留在本地设备上。我们不做多余的数据收集，也不引入面向用户的在线分析服务。
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>1. 我们收集什么</h2>
+        <p>本应用不会主动收集、存储或向开发者传输你的个人数据。</p>
+      </section>
+
+      <section class="panel">
+        <h2>2. 本地处理</h2>
+        <ul>
+          <li>清理操作都在你的本机执行。</li>
+          <li>设置和偏好只保存在本地设备上。</li>
+          <li>只有在你明确点击相关功能时，才会启动外部工具或下载入口。</li>
+        </ul>
+      </section>
+
+      <section class="grid">
+        <article class="panel note">
+          <h2>3. 日志与诊断</h2>
+          <p>应用可能会显示操作输出和本地诊断日志，帮助你了解某次清理任务发生了什么。这些内容默认保留在本地，除非你主动分享。</p>
+        </article>
+        <article class="panel note">
+          <h2>4. 外部链接</h2>
+          <p>应用里可能会提供 GitHub Release、工具下载或相关项目链接。相关下载和跳转都由你自己发起，后续处理由目标网站或服务负责。</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>5. 数据保留</h2>
+        <p>由于我们不收集在线个人数据，因此也没有云端保存周期。若未来增加遥测、同步或其他在线功能，本政策会在发布前同步更新。</p>
+      </section>
+
+      <section class="panel">
+        <h2>6. 你的选择</h2>
+        <ul>
+          <li>你可以随时关闭应用或退出相关功能。</li>
+          <li>你可以自行决定是否下载外部工具。</li>
+          <li>你可以自行删除本地保存的设置和日志。</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>7. 联系方式</h2>
+        <p>项目仓库：<a href="https://github.com/Necream/WindowsCleanerNext-Tauri" target="_blank" rel="noreferrer">https://github.com/Necream/WindowsCleanerNext-Tauri</a></p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-row">
+        <div>Windows Cleaner Next 官方隐私政策</div>
+        <div>© <span id="year"></span> Necream · Apache-2.0</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

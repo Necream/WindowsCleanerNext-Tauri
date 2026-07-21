@@ -1,9 +1,9 @@
 .button1 {
     appearance: none;
-    border: 1px solid color-mix(in srgb, var(--accent-color, #2563eb) 16%, transparent);
-    background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(244,247,251,0.92));
-    border-radius: 10px;
-    color: #0f172a;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    border-radius: 8px;
+    color: inherit;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -13,14 +13,13 @@
     font-weight: 600;
     min-height: 40px;
     padding: 0 18px;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 18px rgba(15,23,42,0.05);
-    transition: transform 140ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+    box-shadow: none;
+    transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease, color 280ms ease;
 }
 
 .button1:hover {
-    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239,244,251,0.96));
-    border-color: color-mix(in srgb, var(--accent-color, #2563eb) 26%, transparent);
-    box-shadow: 0 2px 6px rgba(15,23,42,0.06), 0 12px 24px rgba(15,23,42,0.08);
+    border-color: var(--accent-color, #2563eb);
+    background: var(--input-bg);
 }
 
 .button1 span{
@@ -32,8 +31,7 @@
 }
 
 .button1:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 12px rgba(15,23,42,0.06);
+    border-color: var(--accent-color, #2563eb);
     outline: none;
 }
 
@@ -50,7 +48,7 @@
 }
 
 .button1:not(:disabled):active {
-    transform: translateY(1px);
+    transform: none;
 }
 
 .button1:disabled {
@@ -59,10 +57,10 @@
 }
 .button2 {
     appearance: none;
-    border: 1px solid color-mix(in srgb, var(--accent-color, #2563eb) 18%, transparent);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color, #2563eb) 94%, white), color-mix(in srgb, var(--accent-color, #2563eb) 70%, black));
-    border-radius: 10px;
-    color: #ffffff;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    border-radius: 8px;
+    color: inherit;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -72,16 +70,15 @@
     font-weight: 600;
     min-height: 40px;
     padding: 0 18px;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.10), 0 10px 20px rgba(37,99,235,0.18);
-    transition: transform 140ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+    box-shadow: none;
+    transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease, color 280ms ease;
 }
 
 .button2:active,
 .button2:hover {
     outline: 0;
-    transform: translateY(1px);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color, #2563eb) 96%, white), color-mix(in srgb, var(--accent-color, #2563eb) 82%, black));
-    box-shadow: 0 2px 4px rgba(15,23,42,0.08), 0 16px 28px color-mix(in srgb, var(--accent-color, #2563eb) 22%, transparent);
+    border-color: var(--accent-color, #2563eb);
+    background: var(--input-bg);
 }
 
 .button2 span {
@@ -165,7 +162,7 @@
     border-radius: 50px;
     cursor: not-allowed;
     overflow: hidden;
-    transition: all 0.3s ease cubic-bezier(0.23, 1, 0.320, 1);
+    transition: all 1000ms ease cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .cantbutton span {
@@ -191,7 +188,7 @@
     border-radius: 50px;
     cursor: not-allowed;
     overflow: hidden;
-    transition: all 0.3s ease cubic-bezier(0.23, 1, 0.320, 1);
+    transition: all 1000ms ease cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .correctbutton span {
@@ -257,7 +254,7 @@
     border: 2px solid #b5bfd9;
     background-color: #fff;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    transition: 0.15s ease;
+    transition: 1000ms ease;
     cursor: pointer;
 }
 
@@ -274,7 +271,7 @@
     left: 0.25rem;
     opacity: 0;
     transform: scale(0);
-    transition: 0.25s ease;
+    transition: 1000ms ease;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='://www.w3.org/2000/svg' width='192' height='192' fill='%23FFFFFF' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' fill='none'%3E%3C/rect%3E%3Cpolyline points='216 72.005 104 184 48 128.005' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32'%3E%3C/polyline%3E%3C/svg%3E");
     background-size: 12px;
     background-repeat: no-repeat;
@@ -291,7 +288,7 @@
 }
 
 .checkbox-wrapper-16 .checkbox-icon {
-    transition: 0.375s ease;
+    transition: 1000ms ease;
     color: #494949;
 }
 
@@ -302,6 +299,6 @@
 
 .checkbox-wrapper-16 .checkbox-label {
     color: #707070;
-    transition: 0.375s ease;
+    transition: 1000ms ease;
     text-align: center;
 }

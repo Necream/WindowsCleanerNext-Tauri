@@ -1,6 +1,6 @@
 [package]
 name = "windows-cleaner-next-tauri"
-version = "2.11.4"
+version = "2.22.10"
 description = "WindowsCleanerNext - Tauri Edition"
 authors = ["Necream"]
 edition = "2021"

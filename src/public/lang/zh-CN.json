@@ -1,0 +1,196 @@
+{
+  "meta": {
+    "name": "简体中文"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "主题、语言、窗口行为等基础选项",
+    "appearance": "外观",
+    "themeMode": "主题模式",
+    "themeSystem": "跟随系统",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "accentFollowSystem": "主题色跟随系统",
+    "themeColor": "主题色",
+    "backgroundColor": "背景色",
+    "lightBackground": "浅色背景",
+    "darkBackground": "深色背景",
+    "language": "语言",
+    "uiLanguage": "界面语言",
+    "languageHint": "目前默认支持中文和英文。你也可以自行创建其他语言的翻译文件。",
+    "windowBehavior": "窗口行为",
+    "closeAction": "关闭动作",
+    "closeDirectExit": "直接退出",
+    "closeHint": "当前点击窗口关闭按钮会直接退出程序。"
+  },
+  "clean": {
+    "title": "Windows Cleaner Next",
+    "subtitle": "选择工具以清理系统",
+    "systemSection": "系统清理",
+    "userSection": "用户清理",
+    "appSection": "应用清理",
+    "customScript": "用户定义脚本",
+    "scriptPlaceholder": "编写 .bat 脚本\n例：clean_user_paths.exe D:\\Cache\n    clean_user_paths.exe E:\\Temp",
+    "runScript": "运行脚本",
+    "saveAsBat": "保存为 .bat 并执行",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "recommendedPreset": "推荐清理",
+    "savePreset": "保存配置",
+    "runSelected": "运行选中",
+    "running": "运行中...",
+    "logTitle": "运行日志",
+    "readyHint": "就绪。选中工具后点击\"运行选中\"。"
+  },
+  "tools": {
+    "title": "实用工具",
+    "subtitle": "系统维护与辅助功能",
+    "memDesc": "命令行内存清理工具。下载后放入 Tools 目录即可在「清理」页面中使用「内存清理」功能。",
+    "memLink": "下载 memreduct-cli.exe →",
+    "spaceDesc": "磁盘空间分析工具。仅提供下载链接，适合先找出占空间最大的文件夹。",
+    "spaceLink": "打开官网 →",
+    "openDirTitle": "打开 Tools 目录",
+    "openDirDesc": "打开程序工具存放目录，可手动放置或管理清理工具的可执行文件。",
+    "openDirLink": "打开目录 →",
+    "linkTitle": "🔗 创建链接 (mklink)",
+    "linkDesc": "将文件/文件夹从一盘移动到另一盘，在原位置创建链接，依赖软件无需修改配置即可继续使用。",
+    "linkJ": "目录链接 (/J)",
+    "linkD": "符号链接 (/D)",
+    "linkFile": "文件符号链接",
+    "sourcePath": "原始位置",
+    "targetPath": "链接位置",
+    "createLink": "创建链接",
+    "adminRequired": "需要管理员权限"
+  },
+  "about": {
+    "title": "软件",
+    "currentVersion": "当前版本",
+    "checkUpdate": "检查更新",
+    "checking": "检查中...",
+    "newVersionFound": "发现新版本 {version}",
+    "newVersionAvailable": "新版本 {version} 可用。",
+    "alreadyLatest": "已是最新版本",
+    "alreadyLatestDetail": "当前版本 {current} 已是最新。",
+    "devBuild": "开发内部版本",
+    "devBuildDetail": "当前版本 {current} 是开发内部版本，无法更新。",
+    "checkFailed": "检查失败",
+    "checkFailedDetail": "无法获取最新版本信息: {error}",
+    "downloadLink": "前往下载",
+    "donate": "捐赠",
+    "wechatDonate": "微信捐赠"
+  },
+  "dialog": {
+    "title": "提示",
+    "cancel": "取消",
+    "ok": "确定",
+    "cleanupResult": "清理结果",
+    "cleanupDone": "清理完成。",
+    "cleanupBeforeUsed": "C 盘清理前已用：",
+    "cleanupAfterUsed": "C 盘清理后已用：",
+    "cleanupFreed": "本次释放空间：",
+    "enterPresetName": "请输入配置名称：",
+    "presetPlaceholder": "例如：日常清理",
+    "defaultPresetName": "我的配置",
+    "enterNewPresetName": "请输入新的配置名称：",
+    "newPresetPlaceholder": "新的配置名称",
+    "samePresetExists": "已存在同名配置。",
+    "confirmDeletePreset": "确定删除配置 \"{name}\" 吗？"
+  },
+  "advanced": {
+    "title": "高级",
+    "subtitle": "系统电源、内存与清理预设管理",
+    "hibernateTitle": "休眠开关",
+    "hibernateDesc": "启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。",
+    "currentStatus": "当前状态",
+    "notConfigured": "未配置（由系统管理）",
+    "enableHibernate": "启用休眠",
+    "disableHibernate": "禁用休眠",
+    "vmTitle": "虚拟内存管理",
+    "vmDesc": "查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改",
+    "currentConfig": "当前配置：",
+    "openSettings": "打开系统设置 →",
+    "presetTitle": "清理预设管理",
+    "presetDesc": "这里管理保存到设置里的清理预设。当前启用的预设会同步到主界面的“推荐清理”下拉菜单。",
+    "currentPreset": "当前预设",
+    "applyRecommended": "应用推荐清理",
+    "rename": "重命名",
+    "delete": "删除",
+    "presetHint": "只保存勾选状态；“推荐清理”本身也是一个预设名字。"
+  },
+  "common": {
+    "loading": "查询中...",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "failed": "查询失败",
+    "errorPrefix": "错误: ",
+    "runningPrefix": "正在",
+    "enable": "启用",
+    "disable": "禁用",
+    "operationFailed": "操作失败: ",
+    "openFailed": "打开失败: ",
+    "runTool": "运行 "
+  },
+  "sidebar": {
+    "title": "Windows Cleaner Next",
+    "cDriveSpace": "C 盘空间",
+    "cDriveBar": "C盘占用条",
+    "used": "已用",
+    "free": "剩余",
+    "clean": "清理",
+    "tools": "工具",
+    "advanced": "高级",
+    "settings": "设置",
+    "about": "关于",
+    "version": "v2.22.10"
+  },
+  "toolsData": {
+    "cleanWindowsUpdateCache": {
+      "name": "Windows 更新缓存",
+      "desc": "清理 Windows Update 下载缓存"
+    },
+    "cleanWindowsTemp": {
+      "name": "Windows 临时文件",
+      "desc": "清理 C:\\Windows\\Temp"
+    },
+    "cleanSystemLogs": {
+      "name": "系统日志",
+      "desc": "清理 C:\\Windows\\Logs"
+    },
+    "cleanRestorePoints": {
+      "name": "系统还原点",
+      "desc": "删除所有卷影副本"
+    },
+    "cleanPrefetch": {
+      "name": "预取缓存",
+      "desc": "清理 C:\\Windows\\Prefetch"
+    },
+    "cleanMemory": {
+      "name": "内存清理",
+      "desc": "释放系统工作集与文件缓存 (Mem Reduct)"
+    },
+    "cleanNvidia": {
+      "name": "NVIDIA 驱动缓存",
+      "desc": "清理 NVIDIA 驱动安装/下载缓存"
+    },
+    "niccentExtension": {
+      "name": "NicCent扩展",
+      "desc": "通知NicCent生态清理操作"
+    },
+    "cleanUserTemp": {
+      "name": "用户临时文件",
+      "desc": "清理 %TEMP% 目录"
+    },
+    "cleanUserPaths": {
+      "name": "用户定义脚本",
+      "desc": "编写 bat 脚本自定义清理"
+    },
+    "cleanTmpFiles": {
+      "name": "TMP 文件",
+      "desc": "扫描并删除 C:\\ 中的 .tmp/.cache/.msp"
+    },
+    "cleanBrowserCache": {
+      "name": "浏览器缓存",
+      "desc": "清理 Chrome / Edge 缓存"
+    }
+  }
+}

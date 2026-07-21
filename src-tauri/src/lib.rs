@@ -137,6 +137,39 @@ fn get_settings_path(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn list_language_files(app: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let mut dirs = Vec::new();
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        dirs.push(resource_dir.join("lang"));
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        dirs.push(cwd.join("src").join("public").join("lang"));
+    }
+
+    let mut langs = Vec::new();
+    for dir in dirs {
+        let entries = match fs::read_dir(&dir) {
+            Ok(entries) => entries,
+            Err(_) => continue,
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) != Some("json") {
+                continue;
+            }
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                let stem = stem.to_string();
+                if !langs.contains(&stem) {
+                    langs.push(stem);
+                }
+            }
+        }
+    }
+    langs.sort();
+    Ok(langs)
+}
+
+#[tauri::command]
 fn nvidia_installed() -> Result<bool, String> {
     let check_paths = [
         r"C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA Overlay.exe",
@@ -204,6 +237,39 @@ async fn get_c_drive_usage() -> Result<String, String> {
         return Err("未能读取 C 盘空间信息".to_string());
     }
     Ok(stdout)
+}
+
+#[tauri::command]
+async fn get_windows_accent_color() -> Result<String, String> {
+    let ps_script = r##"
+        $color = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent' -Name AccentColorMenu -ErrorAction SilentlyContinue).AccentColorMenu
+        if ($null -eq $color) {
+            $color = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\DWM' -Name AccentColor -ErrorAction SilentlyContinue).AccentColor
+        }
+        if ($null -eq $color) {
+            $color = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\DWM' -Name ColorizationColor -ErrorAction SilentlyContinue).ColorizationColor
+        }
+        if ($null -eq $color) { Write-Output '' ; exit }
+        $hex = '{0:X8}' -f [uint32]$color
+        # Windows registry accent values are stored as AABBGGRR / ARGB-like DWORDs
+        $rr = $hex.Substring(6,2)
+        $gg = $hex.Substring(4,2)
+        $bb = $hex.Substring(2,2)
+        Write-Output ("#{0}{1}{2}" -f $rr, $gg, $bb)
+    "##;
+
+    let output = Command::new("powershell")
+        .args(["-NoProfile", "-Command", ps_script])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .map_err(|e| format!("读取系统强调色失败: {}", e))?;
+
+    let stdout = decode_tool_output(&output.stdout);
+    let color = stdout.trim();
+    if color.is_empty() {
+        return Err("未能读取系统强调色".to_string());
+    }
+    Ok(color.to_string())
 }
 
 #[tauri::command]
@@ -280,11 +346,13 @@ pub fn run() {
             read_file_content,
             write_file_content,
             get_settings_path,
+            list_language_files,
             nvidia_installed,
             get_hibernate_status,
             set_hibernate,
             get_virtual_memory_info,
             get_c_drive_usage,
+            get_windows_accent_color,
             set_virtual_memory,
         ])
         .setup(move |app| {

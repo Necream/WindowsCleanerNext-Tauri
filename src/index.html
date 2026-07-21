@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <link rel="stylesheet" href="buttons.css">
@@ -52,8 +52,20 @@
                 overflow        : hidden;
                 user-select     : none;
                 transition      : background-color 280ms ease, color 280ms ease;
-                background      : var(--bg-main);
+                background      : var(--app-bg-main, var(--bg-main));
                 color           : var(--text-primary);
+            }
+            button,
+            input,
+            select,
+            textarea,
+            .link-type-btn,
+            .sidebar-nav-item,
+            .tool-item,
+            .action-bar,
+            .action-bar::before,
+            .action-bar::after {
+                transition: background-color 1000ms ease, background 1000ms ease, color 1000ms ease, border-color 1000ms ease, box-shadow 1000ms ease, fill 1000ms ease, stroke 1000ms ease, transform 1000ms ease;
             }
             ::-webkit-scrollbar{display: none;}
             * { -webkit-tap-highlight-color: transparent; }
@@ -135,11 +147,11 @@
                 height: 100%;
                 width: 0%;
                 border-radius: 12px;
-                background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 62%, white));
-                transition: width 260ms ease;
+                background-color: var(--accent-color);
+                transition: width 300ms ease, background-color 1000ms ease;
             }
             .sidebar-disk-fill.warn {
-                background: linear-gradient(90deg, #f59e0b, #ef4444);
+                background-color: #ef4444;
             }
             .sidebar-disk-foot {
                 margin-top: 7px;
@@ -164,7 +176,7 @@
                 border-radius: 8px;
                 cursor: pointer;
                 font-size: 14px;
-                transition: background 200ms, transform 180ms, box-shadow 180ms;
+                transition: background 300ms ease, transform 300ms ease, box-shadow 300ms ease;
                 border: none;
                 background: transparent;
                 color: inherit;
@@ -189,34 +201,41 @@
                 width: 22px;
                 text-align: center;
                 flex-shrink: 0;
+                transition: color 300ms ease, fill 300ms ease, stroke 300ms ease;
             }
             .preset-split {
                 position: relative;
                 display: inline-flex;
                 align-items: stretch;
+                transition: transform 1000ms ease;
+            }
+            .preset-split:hover,
+            .preset-manage:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            .preset-split-main:hover,
+            .preset-split-main:focus-visible,
+            .preset-split.open .preset-split-main {
+                border-color: var(--accent-color, #2563eb);
+                border-right-color: var(--accent-color, #2563eb) !important;
+            }
+            .preset-split-toggle:hover,
+            .preset-split-toggle:focus-visible,
+            .preset-split-toggle.open {
+                border-color: var(--accent-color, #2563eb);
+                border-left-color: var(--accent-color, #2563eb) !important;
             }
             .preset-split-main {
                 border-top-right-radius: 0 !important;
                 border-bottom-right-radius: 0 !important;
-                border-right: 0 !important;
-            }
-            .preset-split:hover > .button1,
-            .preset-manage:hover > .button1 {
-                background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239,244,251,0.96));
-                border-color: color-mix(in srgb, var(--accent-color, #2563eb) 26%, transparent);
-                box-shadow: 0 2px 6px rgba(15,23,42,0.06), 0 12px 24px rgba(15,23,42,0.08);
-            }
-            .preset-split:hover > .button2,
-            .preset-manage:hover > .button2 {
-                outline: 0;
-                transform: translateY(1px);
-                background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color, #2563eb) 96%, white), color-mix(in srgb, var(--accent-color, #2563eb) 82%, black));
-                box-shadow: 0 2px 4px rgba(15,23,42,0.08), 0 16px 28px color-mix(in srgb, var(--accent-color, #2563eb) 22%, transparent);
+                border-right: 1px solid transparent !important;
             }
             .preset-split-toggle {
                 width: 34px;
                 min-width: 34px;
                 padding: 0;
+                border-left: 1px solid transparent !important;
                 border-top-left-radius: 0 !important;
                 border-bottom-left-radius: 0 !important;
                 display: inline-flex;
@@ -238,12 +257,119 @@
                 padding: 6px;
                 display: none;
                 backdrop-filter: blur(10px) saturate(140%);
+                transform-origin: top center;
             }
             .preset-menu.flip-up {
                 top: auto;
                 bottom: calc(100% + 6px);
+                transform-origin: bottom center;
             }
-            .preset-menu.show { display: block; }
+            .preset-menu.show { display: block; animation: menuOpenDown 160ms ease both; }
+            .preset-menu.flip-up.show { animation: menuOpenUp 160ms ease both; }
+            .preset-menu.closing { display: block; animation: menuCloseDown 120ms ease both; }
+            .preset-menu.flip-up.closing { animation: menuCloseUp 120ms ease both; }
+            .language-dropdown {
+                position: relative;
+                display: inline-flex;
+                align-items: stretch;
+                min-width: 160px;
+            }
+            .language-dropdown-main {
+                flex: 1;
+                min-width: 0;
+                padding: 8px 10px;
+                border-radius: 8px 0 0 8px;
+                border: 1px solid var(--input-border);
+                border-right: 0;
+                background: var(--input-bg);
+                color: inherit;
+                font-size: 13px;
+                outline: none;
+                transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .language-dropdown-toggle {
+                width: 34px;
+                min-width: 34px;
+                padding: 0;
+                border-radius: 0 8px 8px 0;
+                border: 1px solid var(--input-border);
+                border-left: 0;
+                background: var(--input-bg);
+                color: inherit;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                outline: none;
+                transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .language-dropdown:hover .language-dropdown-main,
+            .language-dropdown:hover .language-dropdown-toggle {
+                border-color: var(--accent-color, #2563eb);
+                background: var(--input-bg);
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .language-dropdown:hover .language-dropdown-main,
+            .language-dropdown:hover .language-dropdown-toggle,
+            .language-dropdown.open .language-dropdown-main,
+            .language-dropdown.open .language-dropdown-toggle {
+                border-color: var(--accent-color, #2563eb);
+            }
+            .language-dropdown:hover .language-dropdown-main,
+            .language-dropdown:hover .language-dropdown-toggle,
+            .language-dropdown.open .language-dropdown-main,
+            .language-dropdown.open .language-dropdown-toggle {
+                transform: none !important;
+            }
+            .language-dropdown.open .language-dropdown-main,
+            .language-dropdown.open .language-dropdown-toggle,
+            .language-dropdown.open .language-dropdown-menu {
+                border-color: var(--accent-color, #2563eb);
+            }
+            .language-dropdown-menu {
+                position: absolute;
+                left: 0;
+                top: calc(100% + 6px);
+                z-index: 60;
+                min-width: 180px;
+                max-height: 240px;
+                overflow: auto;
+                border: none;
+                border-radius: 10px;
+                background: var(--bg-panel-strong);
+                box-shadow: var(--shadow-md);
+                padding: 6px;
+                display: none;
+                backdrop-filter: blur(10px) saturate(140%);
+                transform-origin: top center;
+            }
+            .language-dropdown-menu.flip-up {
+                top: auto;
+                bottom: calc(100% + 6px);
+                transform-origin: bottom center;
+            }
+            .language-dropdown-menu.show { display: block; animation: menuOpenDown 160ms ease both; }
+            .language-dropdown-menu.flip-up.show { animation: menuOpenUp 160ms ease both; }
+            .language-dropdown-menu.closing { display: block; animation: menuCloseDown 120ms ease both; }
+            .language-dropdown-menu.flip-up.closing { animation: menuCloseUp 120ms ease both; }
+            .language-dropdown-item {
+                width: 100%;
+                text-align: left;
+                border: none;
+                background: transparent;
+                padding: 8px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                color: var(--text-primary);
+                animation: popIn 180ms ease both;
+            }
+            .language-dropdown-item:hover {
+                background: var(--bg-hover);
+            }
             .preset-menu-item {
                 width: 100%;
                 text-align: left;
@@ -331,22 +457,51 @@
                 display: inline-flex;
                 align-items: stretch;
                 min-width: 0;
+                transition: transform 1000ms ease;
             }
             .preset-manage-main {
+                flex: 1;
+                min-width: 0;
+                padding: 8px 10px;
+                background: var(--input-bg);
+                color: inherit;
+                font-size: 13px;
+                outline: none;
                 border-top-right-radius: 0 !important;
                 border-bottom-right-radius: 0 !important;
-                border-right: 0 !important;
-                padding-right: 12px;
+                border: 1px solid var(--input-border);
+                border-right: 0;
+                transform: none !important;
+                box-shadow: none !important;
             }
             .preset-manage-toggle {
                 width: 34px;
                 min-width: 34px;
                 padding: 0;
+                border: 1px solid var(--input-border);
+                border-left: 0;
+                background: var(--input-bg);
+                color: inherit;
                 border-top-left-radius: 0 !important;
                 border-bottom-left-radius: 0 !important;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .preset-manage:hover .preset-manage-main,
+            .preset-manage:hover .preset-manage-toggle {
+                border-color: var(--accent-color, #2563eb);
+                background: var(--input-bg);
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .preset-manage:hover .preset-manage-main,
+            .preset-manage:hover .preset-manage-toggle,
+            .preset-manage.open .preset-manage-main,
+            .preset-manage.open .preset-manage-toggle {
+                border-color: var(--accent-color, #2563eb);
             }
             .preset-manage-menu {
                 position: absolute;
@@ -362,8 +517,33 @@
                 box-shadow: var(--shadow-md);
                 padding: 6px;
                 display: none;
+                transform-origin: top center;
             }
-            .preset-manage-menu.show { display: block; }
+            .preset-manage-menu.flip-up {
+                top: auto;
+                bottom: calc(100% + 6px);
+                transform-origin: bottom center;
+            }
+            .preset-manage-menu.show { display: block; animation: menuOpenDown 160ms ease both; }
+            .preset-manage-menu.flip-up.show { animation: menuOpenUp 160ms ease both; }
+            .preset-manage-menu.closing { display: block; animation: menuCloseDown 120ms ease both; }
+            .preset-manage-menu.flip-up.closing { animation: menuCloseUp 120ms ease both; }
+            @keyframes menuOpenDown {
+                from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes menuOpenUp {
+                from { opacity: 0; transform: translateY(6px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes menuCloseDown {
+                from { opacity: 1; transform: translateY(0) scale(1); }
+                to { opacity: 0; transform: translateY(-6px) scale(0.98); }
+            }
+            @keyframes menuCloseUp {
+                from { opacity: 1; transform: translateY(0) scale(1); }
+                to { opacity: 0; transform: translateY(6px) scale(0.98); }
+            }
             .sidebar-footer {
                 padding: 8px 14px;
                 font-size: 11px;
@@ -423,7 +603,7 @@
                 background: var(--bg-card);
                 border: 1px solid var(--border-color);
                 box-shadow: var(--shadow-sm);
-                transition: background 180ms, box-shadow 180ms, transform 180ms, border-color 180ms;
+                transition: background 280ms ease, box-shadow 1000ms ease, transform 1000ms ease, border-color 280ms ease;
                 cursor: default;
             }
             .tool-card:hover {
@@ -476,7 +656,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: background 180ms, transform 150ms, box-shadow 180ms;
+                transition: background 1000ms ease, transform 1000ms ease, box-shadow 1000ms ease;
                 background: var(--accent-weak);
                 color: var(--accent-color);
             }
@@ -539,13 +719,13 @@
             .action-bar::after {
                 content: "";
                 position: absolute;
-                left: 0;
-                right: 0;
-                top: 0;
-                bottom: 0;
+                left: -24px;
+                right: -24px;
+                top: -14px;
+                bottom: -12px;
                 pointer-events: none;
                 z-index: 0;
-                background: rgba(255,255,255,0.002);
+                background: var(--app-bg-main, var(--bg-main));
                 backdrop-filter: blur(96px);
                 -webkit-backdrop-filter: blur(96px);
                 opacity: 1;
@@ -583,11 +763,9 @@
                 overflow: hidden;
                 pointer-events: none;
                 z-index: 3;
-                background: linear-gradient(180deg,
-                    rgba(255,255,255,0.035) 0%,
-                    rgba(255,255,255,0.085) 100%);
-                border: none;
-                box-shadow: none;
+                background: var(--app-bg-main, var(--bg-main));
+                border: 1px solid var(--accent-color);
+                box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 18%, transparent);
                 color: #111827;
             }
             body[data-theme="dark"] .action-bar .run-overlay {
@@ -607,6 +785,7 @@
                 transition: width 260ms ease, background-color 220ms ease;
                 z-index: -2;
                 border-radius: 12px;
+                box-shadow: inset 0 0 0 1px var(--accent-color);
             }
             .action-bar .run-overlay::after {
                 content: "";
@@ -636,12 +815,11 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 width: 100%;
-                transition: opacity 200ms ease, transform 200ms ease;
+                transition: opacity 300ms ease, transform 300ms ease;
                 position: relative;
                 z-index: 2;
                 padding: 0;
                 transform: translateY(-10px);
-                filter: blur(0.55px);
             }
             .action-bar button {
                 position: relative;
@@ -649,8 +827,11 @@
                 border-radius: 12px;
                 min-height: 38px;
             }
+            .language-select {
+                min-width: 160px;
+            }
             .action-bar button.pressed {
-                animation: expandButton 280ms ease;
+                animation: expandButton 1000ms ease;
                 transform-origin: center center;
             }
             @keyframes expandButton {
@@ -705,7 +886,8 @@
                 width: 0;
                 background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 60%, white), #00ddeb);
                 border-radius: 2px;
-                transition: width 300ms;
+                box-shadow: inset 0 0 0 1px var(--accent-color), 0 0 0 1px var(--accent-color);
+                transition: width 260ms ease;
             }
             .bat-editor {
                 margin-top: 14px;
@@ -777,10 +959,10 @@
                 background: var(--bg-card);
                 border: 1px solid var(--border-color);
                 box-shadow: var(--shadow-sm);
-                transition: background 250ms, box-shadow 180ms, transform 180ms, border-color 180ms;
+                transition: background 280ms ease, box-shadow 1000ms ease, transform 1000ms ease, border-color 280ms ease;
                 width: 100%;
                 min-width: 0;
-                overflow: hidden;
+                overflow: visible;
                 animation: fadeInUp 220ms ease both;
             }
             .tool-item:hover { background: var(--bg-panel-strong); transform: translateY(-1px); box-shadow: var(--shadow-md); }
@@ -791,7 +973,7 @@
                 text-align: center;
                 line-height: 1;
             }
-            .tool-item-body { flex: 1; min-width: 0; overflow: hidden; }
+            .tool-item-body { flex: 1; min-width: 0; overflow: visible; }
             .tool-item-body h3 {
                 font-size: 15px;
                 font-weight: 600;
@@ -835,6 +1017,52 @@
                 align-items: center;
                 flex-wrap: wrap;
                 min-width: 0;
+                margin: 6px 0;
+            }
+            .link-tool-row.hidden {
+                display: none;
+            }
+            .collapsible-row {
+                overflow: hidden;
+                max-height: none;
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+            .accent-stack {
+                display: flex;
+                flex-direction: column;
+                overflow: visible;
+                transition: none;
+                max-height: none;
+                opacity: 1;
+            }
+            .accent-stack.compact { max-height: none; }
+            #theme-color-row {
+                overflow: hidden;
+                max-height: 80px;
+                transition: max-height 180ms ease, opacity 180ms ease, margin 180ms ease, padding 180ms ease;
+            }
+            #theme-color-row.hidden {
+                max-height: 0;
+                opacity: 0;
+                margin-top: 0;
+                margin-bottom: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                pointer-events: none;
+            }
+            #background-color-row {
+                overflow: visible;
+                position: relative;
+                z-index: 3;
+                margin-top: 6px;
+            }
+            #theme-color-follow-system-row {
+                margin-top: 6px;
+            }
+            #theme-color-row {
+                margin-top: 6px;
             }
             .link-tool-row label {
                 font-size: 13px;
@@ -857,6 +1085,7 @@
                 color: inherit;
                 font-size: 13px;
                 outline: none;
+                transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
             }
             .link-tool-row select {
                 flex: 1;
@@ -871,9 +1100,53 @@
                 appearance: none;
                 -webkit-appearance: none;
                 -moz-appearance: none;
+                transition: background 280ms ease, background-color 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
+            }
+            #theme-color {
+                transition: none;
             }
             .link-tool-row button {
                 flex-shrink: 0;
+            }
+            .ios-switch {
+                position: relative;
+                width: 64px;
+                height: 32px;
+                flex: 0 0 auto;
+                display: inline-block;
+            }
+            .ios-switch input {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                margin: 0;
+                cursor: pointer;
+            }
+            .ios-switch-track {
+                position: absolute;
+                inset: 0;
+                border-radius: 999px;
+                background: rgba(120, 128, 146, 0.28);
+                box-shadow: inset 0 0 0 1px rgba(120, 128, 146, 0.18);
+                transition: background 1000ms ease, box-shadow 1000ms ease;
+            }
+            .ios-switch-thumb {
+                position: absolute;
+                top: 4px;
+                left: 4px;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+                transition: transform 180ms ease;
+            }
+            .ios-switch input:checked + .ios-switch-track {
+                background: var(--accent-color);
+                box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 30%, transparent);
+            }
+            .ios-switch input:checked + .ios-switch-track .ios-switch-thumb {
+                transform: translateX(48px);
             }
             .link-tool-row input:focus {
                 border-color: var(--accent-color, #2563eb);
@@ -897,7 +1170,7 @@
                 color: inherit;
                 font-size: 12px;
                 cursor: pointer;
-                transition: all 200ms;
+                transition: all 1000ms ease;
             }
             .link-type-btn:hover { background: var(--bg-hover); }
             .link-type-btn.active {
@@ -939,40 +1212,40 @@
         <div class="app-shell">
             <!-- ===== Sidebar ===== -->
             <aside class="app-sidebar">
-                <div class="sidebar-title normaltext">Windows Cleaner Next</div>
+                <div class="sidebar-title normaltext" data-i18n="sidebar.title">Windows Cleaner Next</div>
                 <div class="sidebar-disk">
                     <div class="sidebar-disk-card">
                         <div class="sidebar-disk-head normaltext">
-                            <span class="sidebar-disk-label">C 盘空间</span>
-                            <span class="sidebar-disk-value" id="c-drive-percent">查询中...</span>
+                            <span class="sidebar-disk-label" data-i18n="sidebar.cDriveSpace">C 盘空间</span>
+                            <span class="sidebar-disk-value" id="c-drive-percent" data-i18n="common.loading">查询中...</span>
                         </div>
-                        <div class="sidebar-disk-bar" aria-label="C盘占用条">
+                        <div class="sidebar-disk-bar" aria-label="C盘占用条" data-i18n-aria-label="sidebar.cDriveBar">
                             <div class="sidebar-disk-fill" id="c-drive-fill"></div>
                         </div>
                         <div class="sidebar-disk-foot normaltext">
-                            <span id="c-drive-used">--</span>
-                            <span id="c-drive-free">--</span>
+                            <span id="c-drive-used" data-i18n="sidebar.used">--</span>
+                            <span id="c-drive-free" data-i18n="sidebar.free">--</span>
                         </div>
                     </div>
                 </div>
                 <nav class="sidebar-nav">
                     <button class="sidebar-nav-item active normaltext" data-tab="clean">
-                        <span class="nav-icon">&#x1F5D1;</span> 清理
+                        <span class="nav-icon">&#x1F5D1;</span> <span data-i18n="sidebar.clean">清理</span>
                     </button>
                     <button class="sidebar-nav-item normaltext" data-tab="tools">
-                        <span class="nav-icon">&#x1F6E0;</span> 工具
+                        <span class="nav-icon">&#x1F6E0;</span> <span data-i18n="sidebar.tools">工具</span>
                     </button>
                     <button class="sidebar-nav-item normaltext" data-tab="advanced">
-                        <span class="nav-icon">&#x2696;</span> 高级
+                        <span class="nav-icon">&#x2696;</span> <span data-i18n="sidebar.advanced">高级</span>
                     </button>
                     <button class="sidebar-nav-item normaltext" data-tab="settings">
-                        <span class="nav-icon">&#x2699;</span> 设置
+                        <span class="nav-icon">&#x2699;</span> <span data-i18n="sidebar.settings">设置</span>
                     </button>
                     <button class="sidebar-nav-item normaltext" data-tab="about">
-                        <span class="nav-icon">&#x2139;</span> 关于
+                        <span class="nav-icon">&#x2139;</span> <span data-i18n="sidebar.about">关于</span>
                     </button>
                 </nav>
-                <div class="sidebar-footer normaltext">v2.11.4</div>
+                <div class="sidebar-footer normaltext" data-i18n="sidebar.version">v2.22.10</div>
             </aside>
 
             <!-- ===== Content ===== -->
@@ -981,63 +1254,63 @@
                 <!-- Tab: 清理 -->
                 <div class="tab-panel active" id="tab-clean">
                     <div class="cleaner-header">
-                        <h1 class="normaltext">Windows Cleaner Next</h1>
-                        <p class="subtitle normaltext">选择工具以清理系统</p>
+                        <h1 class="normaltext" data-i18n="clean.title">Windows Cleaner Next</h1>
+                        <p class="subtitle normaltext" data-i18n="clean.subtitle">选择工具以清理系统</p>
                     </div>
 
-                    <div class="section-title normaltext">系统清理</div>
+                    <div class="section-title normaltext" data-i18n="clean.systemSection">系统清理</div>
                     <div class="tools-grid" id="tools-system"></div>
 
-                    <div class="section-title normaltext">用户清理</div>
+                    <div class="section-title normaltext" data-i18n="clean.userSection">用户清理</div>
                     <div class="tools-grid" id="tools-user"></div>
 
-                    <div class="section-title normaltext">应用清理</div>
+                    <div class="section-title normaltext" data-i18n="clean.appSection">应用清理</div>
                     <div class="tools-grid" id="tools-app"></div>
 
                     <div class="bat-editor" id="bat-editor">
                         <div class="bat-editor-header normaltext" onclick="toggleBatEditor()">
-                            <span class="expand-icon" id="bat-expand-icon">&#9654;</span> 用户定义脚本
+                            <span class="expand-icon" id="bat-expand-icon">&#9654;</span> <span data-i18n="clean.customScript">用户定义脚本</span>
                         </div>
                         <div class="bat-editor-body" id="bat-editor-body">
-                            <textarea class="bat-textarea" id="bat-textarea" placeholder="编写 .bat 脚本&#10;例：clean_user_paths.exe D:\Cache&#10;    clean_user_paths.exe E:\Temp"></textarea>
+                            <textarea class="bat-textarea" id="bat-textarea" data-i18n-placeholder="clean.scriptPlaceholder" placeholder="编写 .bat 脚本&#10;例：clean_user_paths.exe D:\Cache&#10;    clean_user_paths.exe E:\Temp"></textarea>
                             <div class="bat-actions">
-                                <button onclick="runBatScript()">运行脚本</button>
-                                <span class="bat-hint normaltext">保存为 .bat 并执行</span>
+                                <button onclick="runBatScript()" data-i18n="clean.runScript">运行脚本</button>
+                                <span class="bat-hint normaltext" data-i18n="clean.saveAsBat">保存为 .bat 并执行</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="action-bar">
                         <div class="bottom-actions" id="bottom-actions">
-                            <button onclick="selectAll()">全选</button>
-                            <button onclick="deselectAll()">取消全选</button>
+                            <button onclick="selectAll()" data-i18n="clean.selectAll">全选</button>
+                            <button onclick="deselectAll()" data-i18n="clean.deselectAll">取消全选</button>
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
                                 <div class="preset-split">
-                                    <button id="btn-select-preset" class="preset-split-main" onclick="applyPresetByName(getSelectedPresetName(), true)">推荐清理</button>
+                                    <button id="btn-select-preset" class="preset-split-main" onclick="applyPresetByName(getSelectedPresetName(), true)" data-i18n="clean.recommendedPreset">推荐清理</button>
                                     <button class="preset-split-toggle" onclick="togglePresetMenu(event)">&#9662;</button>
                                     <div id="preset-menu" class="preset-menu"></div>
                                 </div>
-                                <button onclick="saveCurrentSelectionAsPreset()">保存配置</button>
+                                <button onclick="saveCurrentSelectionAsPreset()" data-i18n="clean.savePreset">保存配置</button>
                             </div>
-                            <button onclick="runSelected()" id="btn-run-selected">运行选中</button>
+                            <button onclick="runSelected()" id="btn-run-selected" data-i18n="clean.runSelected">运行选中</button>
                         </div>
                         <div class="run-overlay" id="run-overlay">
                             <div class="run-fill" id="run-fill"></div>
-                            <span id="run-overlay-text">运行中...</span>
+                            <span id="run-overlay-text" data-i18n="clean.running">运行中...</span>
                         </div>
                     </div>
 
                     <div class="output-section" id="output-section">
-                        <div class="output-header normaltext">运行日志</div>
-                        <div class="output-content" id="output-content">就绪。选中工具后点击"运行选中"。</div>
+                        <div class="output-header normaltext" data-i18n="clean.logTitle">运行日志</div>
+                        <div class="output-content" id="output-content" data-i18n="clean.readyHint">就绪。选中工具后点击"运行选中"。</div>
                     </div>
                 </div>
 
                 <!-- Tab: 工具 -->
                 <div class="tab-panel" id="tab-tools">
                     <div class="tools-tab-header">
-                        <h2 class="normaltext">实用工具</h2>
-                        <p class="normaltext">系统维护与辅助功能</p>
+                        <h2 class="normaltext" data-i18n="tools.title">实用工具</h2>
+                        <p class="normaltext" data-i18n="tools.subtitle">系统维护与辅助功能</p>
                     </div>
 
                     <div class="tools-tab-grid">
@@ -1045,8 +1318,8 @@
                             <div class="tool-item-icon">&#x1F4BE;</div>
                             <div class="tool-item-body">
                                 <h3 class="normaltext">Mem Reduct CLI</h3>
-                                <p class="normaltext">命令行内存清理工具。下载后放入 Tools 目录即可在「清理」页面中使用「内存清理」功能。</p>
-                                <a href="https://github.com/Necream/memreduct-cli/releases" target="_blank" class="normaltext">下载 memreduct-cli.exe &rarr;</a>
+                                <p class="normaltext" data-i18n="tools.memDesc">命令行内存清理工具。下载后放入 Tools 目录即可在「清理」页面中使用「内存清理」功能。</p>
+                                <a href="https://github.com/Necream/memreduct-cli/releases" target="_blank" class="normaltext" data-i18n="tools.memLink">下载 memreduct-cli.exe &rarr;</a>
                             </div>
                         </div>
 
@@ -1054,40 +1327,40 @@
                             <div class="tool-item-icon">&#x1F4C8;</div>
                             <div class="tool-item-body">
                                 <h3 class="normaltext">SpaceSniffer</h3>
-                                <p class="normaltext">磁盘空间分析工具。仅提供下载链接，适合先找出占空间最大的文件夹。</p>
-                                <a href="https://www.uderzo.it/main_products/space_sniffer/" target="_blank" class="normaltext">打开官网 &rarr;</a>
+                                <p class="normaltext" data-i18n="tools.spaceDesc">磁盘空间分析工具。仅提供下载链接，适合先找出占空间最大的文件夹。</p>
+                                <a href="https://www.uderzo.it/main_products/space_sniffer/" target="_blank" class="normaltext" data-i18n="tools.spaceLink">打开官网 &rarr;</a>
                             </div>
                         </div>
 
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F4C1;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">打开 Tools 目录</h3>
-                                <p class="normaltext">打开程序工具存放目录，可手动放置或管理清理工具的可执行文件。</p>
-                                <a href="#" onclick="openToolsDir()" class="normaltext">打开目录 &rarr;</a>
+                                <h3 class="normaltext" data-i18n="tools.openDirTitle">打开 Tools 目录</h3>
+                                <p class="normaltext" data-i18n="tools.openDirDesc">打开程序工具存放目录，可手动放置或管理清理工具的可执行文件。</p>
+                                <a href="#" onclick="openToolsDir()" class="normaltext" data-i18n="tools.openDirLink">打开目录 &rarr;</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="link-tool">
-                        <h3 class="normaltext">&#x1F517; 创建链接 (mklink)</h3>
-                        <p class="link-desc normaltext">将文件/文件夹从一盘移动到另一盘，在原位置创建链接，依赖软件无需修改配置即可继续使用。</p>
+                        <h3 class="normaltext" data-i18n="tools.linkTitle">&#x1F517; 创建链接 (mklink)</h3>
+                        <p class="link-desc normaltext" data-i18n="tools.linkDesc">将文件/文件夹从一盘移动到另一盘，在原位置创建链接，依赖软件无需修改配置即可继续使用。</p>
                         <div class="link-tool-type" id="link-type-group">
-                            <button class="link-type-btn active" data-type="J">目录链接 (/J)</button>
-                            <button class="link-type-btn" data-type="D">符号链接 (/D)</button>
-                            <button class="link-type-btn" data-type="">文件符号链接</button>
+                            <button class="link-type-btn active" data-type="J" data-i18n="tools.linkJ">目录链接 (/J)</button>
+                            <button class="link-type-btn" data-type="D" data-i18n="tools.linkD">符号链接 (/D)</button>
+                            <button class="link-type-btn" data-type="" data-i18n="tools.linkFile">文件符号链接</button>
                         </div>
                         <div class="link-tool-row">
-                            <label class="normaltext">原始位置</label>
+                            <label class="normaltext" data-i18n="tools.sourcePath">原始位置</label>
                             <input type="text" id="link-source" placeholder="C:\Program Files\MyApp" />
                         </div>
                         <div class="link-tool-row">
-                            <label class="normaltext">链接位置</label>
+                            <label class="normaltext" data-i18n="tools.targetPath">链接位置</label>
                             <input type="text" id="link-target" placeholder="D:\Links\MyApp" />
                         </div>
                         <div class="link-tool-row">
-                            <button onclick="createLink()">创建链接</button>
-                            <span class="bat-hint normaltext">需要管理员权限</span>
+                            <button onclick="createLink()" data-i18n="tools.createLink">创建链接</button>
+                            <span class="bat-hint normaltext" data-i18n="tools.adminRequired">需要管理员权限</span>
                         </div>
                         <div class="link-output" id="link-output"></div>
                     </div>
@@ -1096,26 +1369,41 @@
                 <!-- Tab: 设置 -->
                 <div class="tab-panel" id="tab-settings">
                     <div class="tools-tab-header">
-                        <h2 class="normaltext">设置</h2>
-                        <p class="normaltext">主题、语言、窗口行为等基础选项</p>
+                        <h2 class="normaltext" data-i18n="settings.title">设置</h2>
+                        <p class="normaltext" data-i18n="settings.subtitle">主题、语言、窗口行为等基础选项</p>
                     </div>
 
                     <div class="settings-surface">
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F58C;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">外观</h3>
+                                <h3 class="normaltext" data-i18n="settings.appearance">外观</h3>
                                 <div class="link-tool-row">
-                                    <label class="normaltext">主题模式</label>
+                                    <label class="normaltext" data-i18n="settings.themeMode">主题模式</label>
                                     <div class="link-tool-type">
-                                        <button class="link-type-btn active" data-theme="system">跟随系统</button>
-                                        <button class="link-type-btn" data-theme="light">浅色</button>
-                                        <button class="link-type-btn" data-theme="dark">深色</button>
+                                        <button class="link-type-btn active" data-theme="system" data-i18n="settings.themeSystem">跟随系统</button>
+                                        <button class="link-type-btn" data-theme="light" data-i18n="settings.themeLight">浅色</button>
+                                        <button class="link-type-btn" data-theme="dark" data-i18n="settings.themeDark">深色</button>
                                     </div>
                                 </div>
-                                <div class="link-tool-row">
-                                    <label class="normaltext">主题色</label>
-                                    <input type="color" id="theme-color" value="#2563eb" />
+                                <div class="accent-stack" id="accent-stack">
+                                    <div class="link-tool-row">
+                                        <label class="normaltext" data-i18n="settings.accentFollowSystem">主题色跟随系统</label>
+                                        <label class="ios-switch">
+                                            <input type="checkbox" id="theme-color-follow-system" />
+                                            <span class="ios-switch-track">
+                                                <span class="ios-switch-thumb"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="link-tool-row collapsible-row" id="theme-color-row">
+                                        <label class="normaltext" data-i18n="settings.themeColor">主题色</label>
+                                        <input type="color" id="theme-color" value="#2563eb" />
+                                    </div>
+                                    <div class="link-tool-row collapsible-row" id="background-color-row">
+                                        <label class="normaltext" id="background-color-label" data-i18n="settings.backgroundColor">背景色</label>
+                                        <input type="color" id="background-color" value="#f4f7fb" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1123,24 +1411,28 @@
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F4DD;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">语言</h3>
+                                <h3 class="normaltext" data-i18n="settings.language">语言</h3>
                                 <div class="link-tool-row">
-                                    <label class="normaltext">界面语言</label>
-                                    <input type="text" value="简体中文" disabled />
+                                    <label class="normaltext" data-i18n="settings.uiLanguage">界面语言</label>
+                                    <div class="language-dropdown">
+                                        <button id="ui-language-btn" class="preset-manage-main language-dropdown-main" type="button" onclick="toggleLanguageMenu(event)">简体中文</button>
+                                        <button class="preset-manage-toggle language-dropdown-toggle" type="button" aria-label="展开语言菜单" onclick="toggleLanguageMenu(event)">&#9662;</button>
+                                        <div id="ui-language-menu" class="language-dropdown-menu"></div>
+                                    </div>
                                 </div>
-                                <div class="link-output show">当前版本仅提供简体中文界面，后续再补语言切换。</div>
+                                <div class="link-output show" data-i18n="settings.languageHint">目前默认支持中文和英文。你也可以自行创建其他语言的翻译文件。</div>
                             </div>
                         </div>
 
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F5D1;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">窗口行为</h3>
+                                <h3 class="normaltext" data-i18n="settings.windowBehavior">窗口行为</h3>
                                 <div class="link-tool-row">
-                                    <label class="normaltext">关闭动作</label>
-                                    <input type="text" value="直接退出" disabled />
+                                    <label class="normaltext" data-i18n="settings.closeAction">关闭动作</label>
+                                    <input type="text" value="直接退出" data-i18n-value="settings.closeDirectExit" disabled />
                                 </div>
-                                <div class="link-output show">当前点击窗口关闭按钮会直接退出程序。</div>
+                                <div class="link-output show" data-i18n="settings.closeHint">当前点击窗口关闭按钮会直接退出程序。</div>
                             </div>
                         </div>
                     </div>
@@ -1149,23 +1441,23 @@
                 <!-- Tab: 高级 -->
                 <div class="tab-panel" id="tab-advanced">
                     <div class="tools-tab-header">
-                        <h2 class="normaltext">高级</h2>
-                        <p class="normaltext">系统电源、内存与清理预设管理</p>
+                        <h2 class="normaltext" data-i18n="advanced.title">高级</h2>
+                        <p class="normaltext" data-i18n="advanced.subtitle">系统电源、内存与清理预设管理</p>
                     </div>
 
                     <div class="tools-tab-grid">
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x23F0;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">休眠开关</h3>
-                                <p class="normaltext">启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。</p>
+                                <h3 class="normaltext" data-i18n="advanced.hibernateTitle">休眠开关</h3>
+                                <p class="normaltext" data-i18n="advanced.hibernateDesc">启用或禁用系统休眠功能。禁用后可节省磁盘空间（移除 hiberfil.sys），但会失去休眠能力。</p>
                                 <div class="link-tool-row" style="margin-bottom:8px">
-                                    <label class="normaltext">当前状态</label>
+                                    <label class="normaltext" data-i18n="advanced.currentStatus">当前状态</label>
                                     <span id="hibernate-status" class="normaltext" style="font-weight:600">查询中...</span>
                                 </div>
                                 <div class="link-tool-row">
-                                    <button id="btn-hibernate-on" onclick="setHibernate(true)" class="button1">启用休眠</button>
-                                    <button id="btn-hibernate-off" onclick="setHibernate(false)" class="button1">禁用休眠</button>
+                                    <button id="btn-hibernate-on" onclick="setHibernate(true)" class="button1" data-i18n="advanced.enableHibernate">启用休眠</button>
+                                    <button id="btn-hibernate-off" onclick="setHibernate(false)" class="button1" data-i18n="advanced.disableHibernate">禁用休眠</button>
                                 </div>
                                 <div class="link-output" id="hibernate-output"></div>
                             </div>
@@ -1174,35 +1466,34 @@
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F4C8;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">虚拟内存管理</h3>
-                                <p class="normaltext">查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改</p>
+                                <h3 class="normaltext" data-i18n="advanced.vmTitle">虚拟内存管理</h3>
+                                <p class="normaltext" data-i18n="advanced.vmDesc">查看当前页面文件配置。跳转到系统设置界面手动调整，更加安全可靠。<br>使用路径：系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 更改</p>
                                 <div style="margin:8px 0">
-                                    <span class="normaltext" style="opacity:0.7">当前配置：</span>
+                                    <span class="normaltext" style="opacity:0.7" data-i18n="advanced.currentConfig">当前配置：</span>
                                     <span id="vm-info" class="normaltext" style="font-weight:600">查询中...</span>
                                 </div>
-                                <a href="#" onclick="openVirtualMemorySettings()" class="normaltext">打开系统设置 &rarr;</a>
+                                <a href="#" onclick="openVirtualMemorySettings()" class="normaltext" data-i18n="advanced.openSettings">打开系统设置 &rarr;</a>
                             </div>
                         </div>
                         <div class="tool-item">
                             <div class="tool-item-icon">&#x1F4BE;</div>
                             <div class="tool-item-body">
-                                <h3 class="normaltext">清理预设管理</h3>
-                                <p class="normaltext">这里管理保存到设置里的清理预设。当前启用的预设会同步到主界面的“推荐清理”下拉菜单。</p>
-                <div class="link-tool-row" style="margin-bottom:8px">
-                    <label class="normaltext">当前预设</label>
-                    <div class="preset-manage">
-                        <button id="preset-manage-btn" class="preset-manage-main" onclick="toggleManagePresetMenu(event)">推荐清理</button>
-                        <button class="preset-manage-toggle" aria-label="展开预设菜单" onclick="toggleManagePresetMenu(event)">&#9662;</button>
-                        <div id="preset-manage-menu" class="preset-manage-menu"></div>
-                    </div>
-                </div>
-                                <div class="link-tool-row">
-                                    <button onclick="selectRecommended()">应用推荐清理</button>
-                                    <button onclick="saveCurrentSelectionAsPreset()">保存当前勾选</button>
-                                    <button onclick="renamePreset(getManagedPresetName())">重命名</button>
-                                    <button onclick="deletePreset(getManagedPresetName())">删除</button>
-                                </div>
-                                <div class="link-output show">只保存勾选状态；“推荐清理”本身也是一个预设名字。</div>
+                                <h3 class="normaltext" data-i18n="advanced.presetTitle">清理预设管理</h3>
+                                <p class="normaltext" data-i18n="advanced.presetDesc">这里管理保存到设置里的清理预设。当前启用的预设会同步到主界面的“推荐清理”下拉菜单。</p>
+                        <div class="link-tool-row" style="margin-bottom:8px">
+                            <label class="normaltext" data-i18n="advanced.currentPreset">当前预设</label>
+                            <div class="language-dropdown preset-manage">
+                                <button id="preset-manage-btn" class="language-dropdown-main" type="button" onclick="toggleManagePresetMenu(event)">推荐清理</button>
+                                <button class="language-dropdown-toggle" type="button" aria-label="展开预设菜单" onclick="toggleManagePresetMenu(event)">&#9662;</button>
+                                <div id="preset-manage-menu" class="preset-manage-menu"></div>
+                            </div>
+                        </div>
+                        <div class="link-tool-row">
+                            <button onclick="selectRecommended()" data-i18n="advanced.applyRecommended">应用推荐清理</button>
+                            <button onclick="renamePreset(getManagedPresetName())" data-i18n="advanced.rename">重命名</button>
+                            <button onclick="deletePreset(getManagedPresetName())" data-i18n="advanced.delete">删除</button>
+                        </div>
+                                <div class="link-output show" data-i18n="advanced.presetHint">只保存勾选状态；“推荐清理”本身也是一个预设名字。</div>
                             </div>
                         </div>
                     </div>
@@ -1217,22 +1508,22 @@
 
                     <div class="settings-surface">
                         <div class="link-tool">
-                            <h3 class="normaltext">软件</h3>
-                            <div class="link-tool-row">
-                                <label class="normaltext">当前版本</label>
-                                <span id="about-version" class="normaltext" style="font-weight:600">2.11.4</span>
+                        <h3 class="normaltext" data-i18n="about.title">软件</h3>
+                        <div class="link-tool-row">
+                                <label class="normaltext" data-i18n="about.currentVersion">当前版本</label>
+                                <span id="about-version" class="normaltext" style="font-weight:600">2.22.10</span>
                             </div>
                             <div class="link-tool-row">
-                                <button id="btn-check-update" onclick="checkUpdate()" class="button1">检查更新</button>
+                                <button id="btn-check-update" onclick="checkUpdate()" class="button1" data-i18n="about.checkUpdate">检查更新</button>
                                 <span id="update-status" class="normaltext" style="margin-left:10px"></span>
                             </div>
                             <div class="link-output" id="update-output"></div>
                         </div>
 
                                                 <div class="link-tool">
-                            <h3 class="normaltext">捐赠</h3>
+                            <h3 class="normaltext" data-i18n="about.donate">捐赠</h3>
                             <div class="link-tool-row">
-                                <p class="normaltext" style="font-weight:600; margin-bottom:6px">微信捐赠</p>
+                                <p class="normaltext" style="font-weight:600; margin-bottom:6px" data-i18n="about.wechatDonate">微信捐赠</p>
                             </div>
                             <div style="text-align:center">
                                 <img src="donate-wechat.jpg" style="max-width:280px; border-radius:12px" />
@@ -1244,12 +1535,12 @@
         </div>
         <div id="dialog-overlay" class="dialog-overlay" onclick="dismissDialog(event)">
             <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onclick="event.stopPropagation()">
-                <div id="dialog-title" class="dialog-title normaltext">提示</div>
+                <div id="dialog-title" class="dialog-title normaltext" data-i18n="dialog.title">提示</div>
                 <div id="dialog-body" class="dialog-body normaltext"></div>
                 <input id="dialog-input" class="dialog-input" type="text" style="display:none" />
                 <div class="dialog-actions">
-                    <button id="dialog-cancel" onclick="closeDialog(false)">取消</button>
-                    <button id="dialog-ok" onclick="closeDialog(true)">确定</button>
+                    <button id="dialog-cancel" onclick="closeDialog(false)" data-i18n="dialog.cancel">取消</button>
+                    <button id="dialog-ok" onclick="closeDialog(true)" data-i18n="dialog.ok">确定</button>
                 </div>
             </div>
         </div>
@@ -1324,15 +1615,15 @@
                 var cancel = document.getElementById('dialog-cancel');
                 var okOnly = !!(options && options.okOnly);
 
-                title.textContent = (options && options.title) || '提示';
+                title.textContent = (options && options.title) || t('dialog.title', '提示');
                 body.textContent = (options && options.message) || '';
 
                 if (window._dialogMode === 'input') {
                     input.style.display = 'block';
                     input.value = (options && options.value) || '';
                     input.placeholder = (options && options.placeholder) || '';
-                    ok.textContent = '确定';
-                    cancel.textContent = '取消';
+                    ok.textContent = t('dialog.ok', '确定');
+                    cancel.textContent = t('dialog.cancel', '取消');
                     window._dialogKeyHandler = function(e) {
                         if (e.key === 'Enter') {
                             e.preventDefault();
@@ -1342,9 +1633,9 @@
                     input.addEventListener('keydown', window._dialogKeyHandler);
                 } else {
                     input.style.display = 'none';
-                    ok.textContent = '确定';
+                    ok.textContent = t('dialog.ok', '确定');
                     cancel.style.display = okOnly ? 'none' : 'inline-flex';
-                    cancel.textContent = '取消';
+                    cancel.textContent = t('dialog.cancel', '取消');
                     if (enterToOkOnly) {
                         window._dialogWindowKeyHandler = function(e) {
                         if (e.key === 'Enter') {
@@ -1424,11 +1715,214 @@
         var appSettings = {
             themeMode: 'system',
             accentColor: '#2563eb',
+            accentFollowSystem: false,
+            systemAccentColor: '#2563eb',
+            backgroundColorLight: '#f4f7fb',
+            backgroundColorDark: '#0f172a',
+            language: 'zh-CN',
             cleaningPresets: {
                 '推荐清理': null
             },
             activeCleaningPreset: '推荐清理'
         };
+
+        var languagePack = {};
+        var languageCache = {};
+        var availableLanguages = [];
+        var commonLanguageNames = {
+            'zh-CN': '简体中文',
+            'en-US': 'English',
+            'ja-JP': '日本語',
+            'ko-KR': '한국어',
+            'fr-FR': 'Français',
+            'de-DE': 'Deutsch',
+            'es-ES': 'Español',
+            'pt-BR': 'Português (Brasil)',
+            'ru-RU': 'Русский',
+            'it-IT': 'Italiano',
+            'tr-TR': 'Türkçe',
+            'ar-SA': 'العربية'
+        };
+
+        function getDefaultLanguage() {
+            return (navigator.language || '').toLowerCase().indexOf('en') === 0 ? 'en-US' : 'zh-CN';
+        }
+
+        function getLanguageDisplayName(code, pack) {
+            if (pack && pack.meta && pack.meta.name) return pack.meta.name;
+            return commonLanguageNames[code] || code;
+        }
+
+        async function loadAvailableLanguages() {
+            try {
+                var codes = await sendToBackend('list_language_files');
+                availableLanguages = Array.isArray(codes) ? codes.slice() : [];
+            } catch(e) {
+                availableLanguages = ['zh-CN', 'en-US'];
+            }
+            if (availableLanguages.length === 0) {
+                availableLanguages = ['zh-CN', 'en-US'];
+            }
+            availableLanguages = availableLanguages.filter(function(code, index, arr) {
+                return arr.indexOf(code) === index;
+            });
+            availableLanguages.sort(function(a, b) {
+                if (a === 'zh-CN') return -1;
+                if (b === 'zh-CN') return 1;
+                if (a === 'en-US') return -1;
+                if (b === 'en-US') return 1;
+                return a.localeCompare(b);
+            });
+        }
+
+        async function loadLanguagePack(lang) {
+            lang = lang || appSettings.language || 'zh-CN';
+            if (languageCache[lang]) return languageCache[lang];
+            var candidates = [
+                '/lang/' + lang + '.json',
+                './lang/' + lang + '.json',
+                'lang/' + lang + '.json'
+            ];
+            var response = null;
+            var text = '';
+            var lastError = null;
+            for (var i = 0; i < candidates.length; i++) {
+                try {
+                    response = await fetch(candidates[i], { cache: 'no-store' });
+                    if (!response.ok) continue;
+                    text = await response.text();
+                    if (text.trim().charAt(0) === '<') continue;
+                    break;
+                } catch (e) {
+                    lastError = e;
+                }
+                response = null;
+                text = '';
+            }
+            if (!response || !text) throw new Error('Failed to load language pack: ' + lang + (lastError ? ' (' + lastError.message + ')' : ''));
+            var json = JSON.parse(text);
+            languageCache[lang] = json;
+            return json;
+        }
+
+        function readLanguageValue(key, fallback) {
+            var value = languagePack;
+            key.split('.').forEach(function(part) {
+                value = value && value[part];
+            });
+            return typeof value === 'string' ? value : (fallback || key);
+        }
+
+        function t(key, fallback) {
+            return readLanguageValue(key, fallback);
+        }
+
+        function applyLanguageToDom() {
+            document.documentElement.lang = appSettings.language || 'zh-CN';
+            document.querySelectorAll('[data-i18n]').forEach(function(node) {
+                var key = node.getAttribute('data-i18n');
+                node.innerHTML = readLanguageValue(key, node.textContent);
+            });
+            document.querySelectorAll('[data-i18n-value]').forEach(function(node) {
+                var key = node.getAttribute('data-i18n-value');
+                node.value = readLanguageValue(key, node.value);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(function(node) {
+                var key = node.getAttribute('data-i18n-placeholder');
+                node.placeholder = readLanguageValue(key, node.placeholder);
+            });
+            refreshBackgroundColorControl();
+            syncPresetControls();
+            rebuildToolCards();
+            syncDynamicUiText();
+            refreshLanguageSelect();
+        }
+
+        async function refreshLanguageSelect() {
+            var uiLangBtn = document.getElementById('ui-language-btn');
+            var uiLangMenu = document.getElementById('ui-language-menu');
+            if (!uiLangBtn || !uiLangMenu) return;
+            var current = appSettings.language || getDefaultLanguage();
+            await loadAvailableLanguages();
+            var labels = {};
+            for (var i = 0; i < availableLanguages.length; i++) {
+                var code = availableLanguages[i];
+                try {
+                    var pack = await loadLanguagePack(code);
+                    labels[code] = getLanguageDisplayName(code, pack);
+                } catch(e) {
+                    labels[code] = getLanguageDisplayName(code, null);
+                }
+            }
+            uiLangMenu.innerHTML = '';
+            availableLanguages.forEach(function(code) {
+                var option = document.createElement('button');
+                option.type = 'button';
+                option.className = 'language-dropdown-item';
+                option.textContent = labels[code] || code;
+                option.addEventListener('click', function() {
+                    hideLanguageMenu();
+                    applyLanguage(code, true);
+                });
+                uiLangMenu.appendChild(option);
+            });
+            if (availableLanguages.indexOf(current) === -1) {
+                current = availableLanguages[0] || getDefaultLanguage();
+            }
+            uiLangBtn.textContent = labels[current] || current;
+        }
+
+        function hideLanguageMenu() {
+            var menu = document.getElementById('ui-language-menu');
+            if (menu) {
+                if (menu.classList.contains('show') && !menu.classList.contains('closing')) {
+                    menu.classList.add('closing');
+                    window.setTimeout(function() {
+                        menu.classList.remove('show');
+                        menu.classList.remove('closing');
+                        menu.classList.remove('flip-up');
+                        menu.style.maxHeight = '';
+                    }, 120);
+                } else {
+                    menu.classList.remove('show');
+                    menu.classList.remove('closing');
+                    menu.classList.remove('flip-up');
+                    menu.style.maxHeight = '';
+                }
+            }
+            var wrap = document.querySelector('.language-dropdown');
+            if (wrap) wrap.classList.remove('open');
+        }
+
+        function toggleLanguageMenu(event) {
+            if (event) event.stopPropagation();
+            var menu = document.getElementById('ui-language-menu');
+            if (!menu) return;
+            if (menu.classList.contains('show')) {
+                hideLanguageMenu();
+                return;
+            }
+            if (!menu.classList.contains('show')) {
+                menu.classList.remove('closing');
+                var rect = menu.parentElement.getBoundingClientRect();
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var spaceAbove = rect.top;
+                menu.classList.toggle('flip-up', spaceBelow < 220 && spaceAbove > spaceBelow);
+                var available = menu.classList.contains('flip-up') ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
+                menu.style.maxHeight = available + 'px';
+            }
+            menu.classList.add('show');
+            var wrap = document.querySelector('.language-dropdown');
+            if (wrap) wrap.classList.add('open');
+        }
+
+        async function applyLanguage(lang, persist) {
+            lang = lang || getDefaultLanguage();
+            languagePack = await loadLanguagePack(lang);
+            appSettings.language = lang;
+            applyLanguageToDom();
+            if (persist) saveAppSettings();
+        }
 
         function getDefaultRecommendedPresetState() {
             var state = {};
@@ -1451,7 +1945,7 @@
         }
 
         function getSelectedPresetName() {
-            return appSettings.activeCleaningPreset || '推荐清理';
+            return appSettings.activeCleaningPreset || t('clean.recommendedPreset', '推荐清理');
         }
 
         function getPresetNames() {
@@ -1459,9 +1953,9 @@
         }
 
         function ensurePresetExists(name) {
-            if (!name) name = '推荐清理';
+            if (!name) name = t('clean.recommendedPreset', '推荐清理');
             if (!appSettings.cleaningPresets[name]) {
-                appSettings.cleaningPresets[name] = name === '推荐清理' ? getDefaultRecommendedPresetState() : clonePresetState(null);
+                appSettings.cleaningPresets[name] = name === t('clean.recommendedPreset', '推荐清理') ? getDefaultRecommendedPresetState() : clonePresetState(null);
             }
         }
 
@@ -1476,6 +1970,7 @@
             var names = getPresetNames();
             var active = getSelectedPresetName();
             var managed = getManagedPresetName();
+            var defaultPreset = t('clean.recommendedPreset', '推荐清理');
 
             if (menu) {
                 menu.innerHTML = '';
@@ -1483,7 +1978,7 @@
                     var item = document.createElement('button');
                     item.type = 'button';
                     item.className = 'preset-menu-item';
-                    item.textContent = name;
+                    item.textContent = name === '推荐清理' || name === defaultPreset ? defaultPreset : name;
                     item.addEventListener('click', function() {
                         applyPresetByName(name, true);
                         hidePresetMenu();
@@ -1498,7 +1993,7 @@
                     var item = document.createElement('button');
                     item.type = 'button';
                     item.className = 'preset-menu-item';
-                    item.textContent = name;
+                    item.textContent = name === '推荐清理' || name === defaultPreset ? defaultPreset : name;
                     item.addEventListener('click', function() {
                         setManagedPresetName(name);
                         hideManagePresetMenu();
@@ -1520,51 +2015,94 @@
             }
 
             var btn = document.getElementById('btn-select-preset');
-            if (btn) btn.textContent = active;
+            if (btn) btn.textContent = active === '推荐清理' || active === defaultPreset ? defaultPreset : active;
             var activeLabel = document.getElementById('active-preset-label');
-            if (activeLabel) activeLabel.textContent = active;
+            if (activeLabel) activeLabel.textContent = active === '推荐清理' || active === defaultPreset ? defaultPreset : active;
             var manageBtn = document.getElementById('preset-manage-btn');
-            if (manageBtn) manageBtn.textContent = managed;
+            if (manageBtn) manageBtn.textContent = managed === '推荐清理' || managed === defaultPreset ? defaultPreset : managed;
         }
 
         function hidePresetMenu() {
             var menu = document.getElementById('preset-menu');
             if (menu) {
-                menu.classList.remove('show');
-                menu.classList.remove('flip-up');
-                menu.style.maxHeight = '';
+                if (menu.classList.contains('show') && !menu.classList.contains('closing')) {
+                    menu.classList.add('closing');
+                    var flipUp = menu.classList.contains('flip-up');
+                    window.setTimeout(function() {
+                        menu.classList.remove('show');
+                        menu.classList.remove('closing');
+                        menu.classList.remove('flip-up');
+                        menu.style.maxHeight = '';
+                    }, 120);
+                } else {
+                    menu.classList.remove('show');
+                    menu.classList.remove('closing');
+                    menu.classList.remove('flip-up');
+                    menu.style.maxHeight = '';
+                }
             }
+            var toggle = document.querySelector('.preset-split-toggle');
+            if (toggle) toggle.classList.remove('open');
         }
 
         function togglePresetMenu(event) {
             if (event) event.stopPropagation();
             var menu = document.getElementById('preset-menu');
             if (!menu) return;
-            if (!menu.classList.contains('show')) {
-                var rect = menu.parentElement.getBoundingClientRect();
-                var spaceBelow = window.innerHeight - rect.bottom;
-                var spaceAbove = rect.top;
-                menu.classList.toggle('flip-up', spaceBelow < 220 && spaceAbove > spaceBelow);
-                var available = menu.classList.contains('flip-up') ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
-                menu.style.maxHeight = available + 'px';
+            if (menu.classList.contains('show')) {
+                hidePresetMenu();
+                return;
             }
-            menu.classList.toggle('show');
+            menu.classList.remove('closing');
+            menu.classList.remove('flip-up');
+            var rect = menu.parentElement.getBoundingClientRect();
+            var spaceBelow = window.innerHeight - rect.bottom;
+            var spaceAbove = rect.top;
+            var flipUp = spaceBelow < 220 && spaceAbove > spaceBelow;
+            menu.classList.toggle('flip-up', flipUp);
+            var available = flipUp ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
+            menu.style.maxHeight = available + 'px';
+            menu.classList.add('show');
+            var toggle = document.querySelector('.preset-split-toggle');
+            if (toggle) toggle.classList.add('open');
         }
 
         function hideManagePresetMenu() {
             var menu = document.getElementById('preset-manage-menu');
             if (menu) {
-                menu.classList.remove('show');
-                menu.classList.remove('flip-up');
-                menu.style.maxHeight = '';
+                if (menu.classList.contains('show') && !menu.classList.contains('closing')) {
+                    menu.classList.add('closing');
+                    window.setTimeout(function() {
+                        menu.classList.remove('show');
+                        menu.classList.remove('closing');
+                        menu.classList.remove('flip-up');
+                        menu.style.maxHeight = '';
+                    }, 120);
+                } else {
+                    menu.classList.remove('show');
+                    menu.classList.remove('closing');
+                    menu.classList.remove('flip-up');
+                    menu.style.maxHeight = '';
+                }
             }
+            var wrap = document.querySelector('.preset-manage');
+            if (wrap) wrap.classList.remove('open');
+            var btn = document.getElementById('preset-manage-btn');
+            if (btn) btn.classList.remove('active');
         }
 
         function toggleManagePresetMenu(event) {
             if (event) event.stopPropagation();
             var menu = document.getElementById('preset-manage-menu');
             if (!menu) return;
+            if (menu.classList.contains('show')) {
+                hideManagePresetMenu();
+                var activeBtn = document.getElementById('preset-manage-btn');
+                if (activeBtn) activeBtn.classList.remove('active');
+                return;
+            }
             if (!menu.classList.contains('show')) {
+                menu.classList.remove('closing');
                 var rect = menu.parentElement.getBoundingClientRect();
                 var spaceBelow = window.innerHeight - rect.bottom;
                 var spaceAbove = rect.top;
@@ -1572,36 +2110,44 @@
                 var available = menu.classList.contains('flip-up') ? Math.max(140, spaceAbove - 12) : Math.max(140, spaceBelow - 12);
                 menu.style.maxHeight = available + 'px';
             }
-            menu.classList.toggle('show');
+            menu.classList.add('show');
+            var wrap = document.querySelector('.preset-manage');
+            if (wrap) wrap.classList.add('open');
             var btn = document.getElementById('preset-manage-btn');
-            if (btn) btn.classList.toggle('active', menu.classList.contains('show'));
+            if (btn) btn.classList.add('active');
         }
 
         function handleGlobalMenuDismiss(event) {
             var target = event && event.target;
             var presetWrap = document.querySelector('.preset-split');
             var manageWrap = document.querySelector('.preset-manage');
+            var languageWrap = document.querySelector('.language-dropdown');
             var presetMenu = document.getElementById('preset-menu');
             var manageMenu = document.getElementById('preset-manage-menu');
+            var languageMenu = document.getElementById('ui-language-menu');
             if (!target) {
                 hidePresetMenu();
                 hideManagePresetMenu();
+                hideLanguageMenu();
                 return;
             }
             if (presetWrap && presetWrap.contains(target)) return;
             if (manageWrap && manageWrap.contains(target)) return;
+            if (languageWrap && languageWrap.contains(target)) return;
             if (presetMenu && presetMenu.contains(target)) return;
             if (manageMenu && manageMenu.contains(target)) return;
+            if (languageMenu && languageMenu.contains(target)) return;
             hidePresetMenu();
             hideManagePresetMenu();
+            hideLanguageMenu();
         }
 
         function getManagedPresetName() {
-            return appSettings.activeCleaningPreset || '推荐清理';
+            return appSettings.activeCleaningPreset || t('clean.recommendedPreset', '推荐清理');
         }
 
         function setManagedPresetName(name) {
-            appSettings.activeCleaningPreset = name || '推荐清理';
+            appSettings.activeCleaningPreset = name || t('clean.recommendedPreset', '推荐清理');
             syncPresetControls();
         }
 
@@ -1638,7 +2184,12 @@
 
         async function saveCurrentSelectionAsPreset() {
             if (!window._appPath) return;
-            var presetName = await promptDialog('保存配置', '请输入配置名称：', getSelectedPresetName() || '我的配置', '例如：日常清理');
+            var presetName = await promptDialog(
+                t('clean.savePreset', '保存配置'),
+                t('dialog.enterPresetName', '请输入配置名称：'),
+                '',
+                t('dialog.presetPlaceholder', '例如：日常清理')
+            );
             if (!presetName) return;
             presetName = presetName.trim();
             if (!presetName) return;
@@ -1652,12 +2203,17 @@
 
         async function renamePreset(oldName) {
             if (!oldName || oldName === '推荐清理') return;
-            var newName = await promptDialog('重命名配置', '请输入新的配置名称：', oldName, '新的配置名称');
+            var newName = await promptDialog(
+                t('advanced.rename', '重命名'),
+                t('dialog.enterNewPresetName', '请输入新的配置名称：'),
+                oldName,
+                t('dialog.newPresetPlaceholder', '新的配置名称')
+            );
             if (!newName) return;
             newName = newName.trim();
             if (!newName || newName === oldName) return;
             if (appSettings.cleaningPresets[newName]) {
-                await alertDialog('提示', '已存在同名配置。');
+                await alertDialog(t('dialog.title', '提示'), t('dialog.samePresetExists', '已存在同名配置。'));
                 return;
             }
             appSettings.cleaningPresets[newName] = appSettings.cleaningPresets[oldName];
@@ -1674,7 +2230,10 @@
 
         async function deletePreset(name) {
             if (!name || name === '推荐清理') return;
-            var ok = await confirmDialog('删除配置', '确定删除配置 "' + name + '" 吗？');
+            var ok = await confirmDialog(
+                t('advanced.delete', '删除'),
+                t('dialog.confirmDeletePreset', '确定删除配置 "' + name + '" 吗？')
+            );
             if (!ok) return;
             delete appSettings.cleaningPresets[name];
             if (appSettings.activeCleaningPreset === name) {
@@ -1697,6 +2256,11 @@
                 if (parsed && typeof parsed === 'object') {
                     appSettings.themeMode = parsed.themeMode || appSettings.themeMode;
                     appSettings.accentColor = parsed.accentColor || appSettings.accentColor;
+                    appSettings.accentFollowSystem = typeof parsed.accentFollowSystem === 'boolean' ? parsed.accentFollowSystem : appSettings.accentFollowSystem;
+                    appSettings.systemAccentColor = parsed.systemAccentColor || appSettings.systemAccentColor;
+                    appSettings.backgroundColorLight = parsed.backgroundColorLight || parsed.backgroundColor || appSettings.backgroundColorLight;
+                    appSettings.backgroundColorDark = parsed.backgroundColorDark || appSettings.backgroundColorDark;
+                    appSettings.language = parsed.language || appSettings.language;
                     if (parsed.cleaningPresets && typeof parsed.cleaningPresets === 'object') {
                         appSettings.cleaningPresets = parsed.cleaningPresets;
                     }
@@ -1707,6 +2271,7 @@
             } catch (e) {
                 window._settingsPath = window._settingsPath || '';
             }
+            if (!appSettings.language) appSettings.language = getDefaultLanguage();
         }
 
         async function saveAppSettings() {
@@ -1737,18 +2302,71 @@
             }
         }
 
+        function syncThemeVariables(mode) {
+            var themeMode = mode || document.body.dataset.theme || 'light';
+            var root = document.documentElement;
+            var palette = themeMode === 'dark' ? {
+                bgMain: '#0f172a',
+                bgPanel: 'rgba(15,23,42,0.72)',
+                bgPanelStrong: 'rgba(15,23,42,0.88)',
+                bgSidebar: 'rgba(15,23,42,0.82)',
+                bgCard: 'rgba(30,41,59,0.72)',
+                bgHover: 'rgba(255,255,255,0.06)',
+                borderColor: 'rgba(148,163,184,0.18)',
+                borderStrong: 'rgba(148,163,184,0.26)',
+                textPrimary: '#e5eefc',
+                textSecondary: 'rgba(226,232,240,0.72)',
+                textMuted: 'rgba(226,232,240,0.48)',
+                shadowSm: '0 1px 2px rgba(0,0,0,0.24), 0 12px 28px rgba(0,0,0,0.16)',
+                shadowMd: '0 14px 40px rgba(0,0,0,0.22)',
+                inputBg: 'rgba(15,23,42,0.88)',
+                inputBorder: 'rgba(148,163,184,0.22)'
+            } : {
+                bgMain: '#f4f7fb',
+                bgPanel: 'rgba(255,255,255,0.74)',
+                bgPanelStrong: 'rgba(255,255,255,0.88)',
+                bgSidebar: 'rgba(248,250,252,0.86)',
+                bgCard: 'rgba(255,255,255,0.82)',
+                bgHover: 'rgba(15,23,42,0.05)',
+                borderColor: 'rgba(15,23,42,0.08)',
+                borderStrong: 'rgba(15,23,42,0.14)',
+                textPrimary: '#0f172a',
+                textSecondary: 'rgba(15,23,42,0.66)',
+                textMuted: 'rgba(15,23,42,0.42)',
+                shadowSm: '0 1px 2px rgba(15,23,42,0.05), 0 8px 24px rgba(15,23,42,0.04)',
+                shadowMd: '0 10px 30px rgba(15,23,42,0.08)',
+                inputBg: 'rgba(255,255,255,0.92)',
+                inputBorder: 'rgba(15,23,42,0.12)'
+            };
+            root.style.setProperty('--bg-main', palette.bgMain);
+            root.style.setProperty('--bg-panel', palette.bgPanel);
+            root.style.setProperty('--bg-panel-strong', palette.bgPanelStrong);
+            root.style.setProperty('--bg-sidebar', palette.bgSidebar);
+            root.style.setProperty('--bg-card', palette.bgCard);
+            root.style.setProperty('--bg-hover', palette.bgHover);
+            root.style.setProperty('--border-color', palette.borderColor);
+            root.style.setProperty('--border-strong', palette.borderStrong);
+            root.style.setProperty('--text-primary', palette.textPrimary);
+            root.style.setProperty('--text-secondary', palette.textSecondary);
+            root.style.setProperty('--text-muted', palette.textMuted);
+            root.style.setProperty('--shadow-sm', palette.shadowSm);
+            root.style.setProperty('--shadow-md', palette.shadowMd);
+            root.style.setProperty('--input-bg', palette.inputBg);
+            root.style.setProperty('--input-border', palette.inputBorder);
+        }
+
         function setLightMode() {
             document.body.dataset.theme = 'light';
-            document.body.style.backgroundColor = '';
-            document.body.style.color = '';
+            syncThemeVariables('light');
+            syncAccentColor();
             setStarColor('rgb(0, 255, 229)');
             setButtonStyle('light');
             colorstyle = 'light';
         }
         function setDarkMode() {
             document.body.dataset.theme = 'dark';
-            document.body.style.backgroundColor = '';
-            document.body.style.color = '';
+            syncThemeVariables('dark');
+            syncAccentColor();
             setStarColor('white');
             setButtonStyle('dark');
             colorstyle = 'dark';
@@ -1756,9 +2374,86 @@
 
         function applyAccentColor(color, persist) {
             appSettings.accentColor = color;
-            document.documentElement.style.setProperty('--accent-color', color);
-            document.body.style.setProperty('--accent-color', color);
+            if (!appSettings.accentFollowSystem) {
+                document.documentElement.style.setProperty('--accent-color', color);
+                document.body.style.setProperty('--accent-color', color);
+            }
             if (persist) saveAppSettings();
+        }
+
+        function syncAccentColor() {
+            if (appSettings.accentFollowSystem) {
+                return sendToBackend('get_windows_accent_color').then(function(accent) {
+                    var finalAccent = accent || appSettings.systemAccentColor || appSettings.accentColor;
+                    appSettings.systemAccentColor = finalAccent;
+                    document.documentElement.style.setProperty('--accent-color', finalAccent);
+                    document.body.style.setProperty('--accent-color', finalAccent);
+                    var themeColor = document.getElementById('theme-color');
+                    if (themeColor) themeColor.value = finalAccent;
+                    return finalAccent;
+                }).catch(function() {
+                    var fallback = appSettings.systemAccentColor || appSettings.accentColor || '#2563eb';
+                    document.documentElement.style.setProperty('--accent-color', fallback);
+                    document.body.style.setProperty('--accent-color', fallback);
+                    var themeColor = document.getElementById('theme-color');
+                    if (themeColor) themeColor.value = fallback;
+                    return fallback;
+                });
+            }
+            var accent = appSettings.accentColor;
+            document.documentElement.style.setProperty('--accent-color', accent);
+            document.body.style.setProperty('--accent-color', accent);
+            var themeColor = document.getElementById('theme-color');
+            if (themeColor) themeColor.value = accent;
+            return Promise.resolve(accent);
+        }
+
+        async function pollSystemAccentColor() {
+            if (!appSettings.accentFollowSystem) return;
+            try {
+                var accent = await sendToBackend('get_windows_accent_color');
+                if (!accent) return;
+                if (accent === appSettings.systemAccentColor) return;
+                appSettings.systemAccentColor = accent;
+                document.documentElement.style.setProperty('--accent-color', accent);
+                document.body.style.setProperty('--accent-color', accent);
+                var themeColor = document.getElementById('theme-color');
+                if (themeColor && appSettings.accentFollowSystem) themeColor.value = accent;
+            } catch (e) {}
+        }
+
+        function applyActiveBackgroundColor() {
+            var activeBg = document.body.dataset.theme === 'dark' ? appSettings.backgroundColorDark : appSettings.backgroundColorLight;
+            document.documentElement.style.setProperty('--app-bg-main', activeBg);
+            document.body.style.setProperty('--app-bg-main', activeBg);
+            var backgroundColor = document.getElementById('background-color');
+            if (backgroundColor) {
+                backgroundColor.value = activeBg;
+            }
+        }
+
+        function applyBackgroundColor(color, mode, persist) {
+            mode = mode || appSettings.themeMode;
+            if (mode === 'dark') {
+                appSettings.backgroundColorDark = color;
+            } else if (mode === 'light') {
+                appSettings.backgroundColorLight = color;
+            } else {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    appSettings.backgroundColorDark = color;
+                } else {
+                    appSettings.backgroundColorLight = color;
+                }
+            }
+            applyActiveBackgroundColor();
+            if (persist) saveAppSettings();
+        }
+
+        function getActiveThemeMode() {
+            if (appSettings.themeMode === 'system') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            return appSettings.themeMode;
         }
 
         function applyThemeMode(mode, persist) {
@@ -1771,17 +2466,73 @@
                 if (window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode();
                 else setLightMode();
             }
+            applyActiveBackgroundColor();
+            refreshBackgroundColorControl();
             if (persist) saveAppSettings();
+        }
+
+        function refreshBackgroundColorControl() {
+            var backgroundColor = document.getElementById('background-color');
+            var backgroundColorLabel = document.getElementById('background-color-label');
+            var activeTheme = getActiveThemeMode();
+            if (backgroundColor) {
+                backgroundColor.value = activeTheme === 'dark' ? appSettings.backgroundColorDark : appSettings.backgroundColorLight;
+            }
+            if (backgroundColorLabel) {
+                backgroundColorLabel.textContent = activeTheme === 'dark'
+                    ? t('settings.darkBackground', '深色背景')
+                    : t('settings.lightBackground', '浅色背景');
+            }
+        }
+
+        function refreshThemeModeControls() {
+            var themeButtons = document.querySelectorAll('[data-theme]');
+            var activeTheme = appSettings.themeMode || 'system';
+            themeButtons.forEach(function(btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-theme') === activeTheme);
+            });
+        }
+
+        function refreshAccentFollowSystemUI() {
+            var themeColor = document.getElementById('theme-color');
+            var themeColorRow = document.getElementById('theme-color-row');
+            var accentStack = document.getElementById('accent-stack');
+            var themeColorFollowSystem = document.getElementById('theme-color-follow-system');
+            if (window._accentRowTimer) {
+                window.clearTimeout(window._accentRowTimer);
+                window._accentRowTimer = null;
+            }
+            var enabled = !!appSettings.accentFollowSystem;
+            if (themeColor) themeColor.disabled = enabled;
+            if (themeColorFollowSystem) themeColorFollowSystem.checked = enabled;
+            themeColorRow.style.overflow = 'hidden';
+            if (themeColorRow) {
+                if (enabled) {
+                    themeColorRow.style.marginTop    = '0';
+                    themeColorRow.style.marginBottom = '0';
+                    themeColorRow.style.height       = '0';
+                    if (accentStack) accentStack.classList.add('compact');
+                } else {
+                    themeColorRow.style.marginTop = '';
+                    themeColorRow.style.marginBottom = '';
+                    themeColorRow.style.height = '';
+                    if (accentStack) accentStack.classList.remove('compact');
+                }
+            }
         }
 
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
             if (appSettings.themeMode === 'system') {
                 if (e.matches) { setDarkMode(); } else { setLightMode(); }
+                applyActiveBackgroundColor();
+                refreshBackgroundColorControl();
             }
         });
         window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
             if (appSettings.themeMode === 'system') {
                 if (e.matches) { setLightMode(); } else { setDarkMode(); }
+                applyActiveBackgroundColor();
+                refreshBackgroundColorControl();
             }
         });
 
@@ -1792,6 +2543,10 @@
         function setupSettingsControls() {
             var themeButtons = document.querySelectorAll('[data-theme]');
             var themeColor = document.getElementById('theme-color');
+            var themeColorFollowSystem = document.getElementById('theme-color-follow-system');
+            var backgroundColor = document.getElementById('background-color');
+            var themeColorRow = document.getElementById('theme-color-row');
+            var backgroundColorRow = document.getElementById('background-color-row');
 
             themeButtons.forEach(function(btn) {
                 btn.addEventListener('click', function() {
@@ -1809,16 +2564,38 @@
                 themeColor.value = appSettings.accentColor;
             }
 
+            if (themeColorFollowSystem) {
+                themeColorFollowSystem.addEventListener('change', function() {
+                    appSettings.accentFollowSystem = !!themeColorFollowSystem.checked;
+                    syncAccentColor();
+                    refreshAccentFollowSystemUI();
+                    saveAppSettings();
+                });
+                themeColorFollowSystem.checked = !!appSettings.accentFollowSystem;
+            }
+
+            if (backgroundColor) {
+                backgroundColor.addEventListener('input', function() {
+                    applyBackgroundColor(backgroundColor.value, getActiveThemeMode(), true);
+                    refreshBackgroundColorControl();
+                });
+            }
+
             applyAccentColor(appSettings.accentColor, false);
+            syncAccentColor();
             applyThemeMode(appSettings.themeMode, false);
+            refreshAccentFollowSystemUI();
+            applyLanguageToDom();
+            refreshLanguageSelect();
 
             themeButtons.forEach(function(b) { b.classList.remove('active'); });
             var activeBtn = document.querySelector('[data-theme="' + appSettings.themeMode + '"]');
             if (activeBtn) activeBtn.classList.add('active');
             else document.querySelector('[data-theme="system"]').classList.add('active');
-            if (themeColor) {
-                themeColor.value = appSettings.accentColor;
-            }
+            if (themeColor) themeColor.value = appSettings.accentColor;
+            refreshAccentFollowSystemUI();
+            refreshThemeModeControls();
+            refreshBackgroundColorControl();
         }
     </script>
     <script>
@@ -1834,6 +2611,10 @@
                     var tabId = item.getAttribute('data-tab');
                     panels.forEach(function(p) { p.classList.remove('active'); });
                     document.getElementById('tab-' + tabId).classList.add('active');
+                    if (tabId === 'settings') {
+                        refreshThemeModeControls();
+                        refreshBackgroundColorControl();
+                    }
                     updateActionBarAttachment();
                 });
             });
@@ -1907,18 +2688,18 @@
 
         // ===== Tool definitions =====
         var tools = [
-            { id: 'clean_windows_update_cache', category: 'system', name: 'Windows 更新缓存',   desc: '清理 Windows Update 下载缓存' },
-            { id: 'clean_windows_temp',         category: 'system', name: 'Windows 临时文件',   desc: '清理 C:\\Windows\\Temp' },
-            { id: 'clean_system_logs',          category: 'system', name: '系统日志',           desc: '清理 C:\\Windows\\Logs' },
-            { id: 'clean_restore_points',       category: 'system', name: '系统还原点',         desc: '删除所有卷影副本' },
-            { id: 'clean_prefetch',             category: 'system', name: '预取缓存',           desc: '清理 C:\\Windows\\Prefetch' },
-            { id: 'clean_memory',              category: 'system', name: '内存清理',           desc: '释放系统工作集与文件缓存 (Mem Reduct)' },
-            { id: 'clean_nvidia',              category: 'system', name: 'NVIDIA 驱动缓存',   desc: '清理 NVIDIA 驱动安装/下载缓存' },
-            { id: 'niccent_extension',          category: 'system', name: 'NicCent扩展',        desc: '通知NicCent生态清理操作' },
-            { id: 'clean_user_temp',            category: 'user',   name: '用户临时文件',       desc: '清理 %TEMP% 目录' },
-            { id: 'clean_user_paths',           category: 'user',   name: '用户定义脚本',       desc: '编写 bat 脚本自定义清理' },
-            { id: 'clean_tmp_files',            category: 'user',   name: 'TMP 文件',           desc: '扫描并删除 C:\\ 中的 .tmp/.cache/.msp' },
-            { id: 'clean_browser_cache',        category: 'app',    name: '浏览器缓存',         desc: '清理 Chrome / Edge 缓存' },
+            { id: 'clean_windows_update_cache', category: 'system', nameKey: 'toolsData.cleanWindowsUpdateCache.name', descKey: 'toolsData.cleanWindowsUpdateCache.desc' },
+            { id: 'clean_windows_temp',         category: 'system', nameKey: 'toolsData.cleanWindowsTemp.name', descKey: 'toolsData.cleanWindowsTemp.desc' },
+            { id: 'clean_system_logs',          category: 'system', nameKey: 'toolsData.cleanSystemLogs.name', descKey: 'toolsData.cleanSystemLogs.desc' },
+            { id: 'clean_restore_points',       category: 'system', nameKey: 'toolsData.cleanRestorePoints.name', descKey: 'toolsData.cleanRestorePoints.desc' },
+            { id: 'clean_prefetch',             category: 'system', nameKey: 'toolsData.cleanPrefetch.name', descKey: 'toolsData.cleanPrefetch.desc' },
+            { id: 'clean_memory',               category: 'system', nameKey: 'toolsData.cleanMemory.name', descKey: 'toolsData.cleanMemory.desc' },
+            { id: 'clean_nvidia',               category: 'system', nameKey: 'toolsData.cleanNvidia.name', descKey: 'toolsData.cleanNvidia.desc' },
+            { id: 'niccent_extension',          category: 'system', nameKey: 'toolsData.niccentExtension.name', descKey: 'toolsData.niccentExtension.desc' },
+            { id: 'clean_user_temp',            category: 'user',   nameKey: 'toolsData.cleanUserTemp.name', descKey: 'toolsData.cleanUserTemp.desc' },
+            { id: 'clean_user_paths',           category: 'user',   nameKey: 'toolsData.cleanUserPaths.name', descKey: 'toolsData.cleanUserPaths.desc' },
+            { id: 'clean_tmp_files',            category: 'user',   nameKey: 'toolsData.cleanTmpFiles.name', descKey: 'toolsData.cleanTmpFiles.desc' },
+            { id: 'clean_browser_cache',        category: 'app',    nameKey: 'toolsData.cleanBrowserCache.name', descKey: 'toolsData.cleanBrowserCache.desc' },
         ];
 
         var containerMap = {
@@ -1932,6 +2713,12 @@
 
         // ===== Build UI =====
         function buildUI() {
+            var systemSection = document.querySelector('[data-i18n="clean.systemSection"]');
+            var userSection = document.querySelector('[data-i18n="clean.userSection"]');
+            var appSection = document.querySelector('[data-i18n="clean.appSection"]');
+            if (systemSection) systemSection.textContent = t('clean.systemSection', '系统清理');
+            if (userSection) userSection.textContent = t('clean.userSection', '用户清理');
+            if (appSection) appSection.textContent = t('clean.appSection', '应用清理');
             tools.forEach(function(tool) {
                 var container = document.getElementById(containerMap[tool.category]);
                 var card = document.createElement('div');
@@ -1950,17 +2737,17 @@
                 info.className = 'tool-info';
                 var nameEl = document.createElement('div');
                 nameEl.className = 'tool-name normaltext';
-                nameEl.textContent = tool.name;
+                nameEl.textContent = t(tool.nameKey, tool.nameKey);
                 var descEl = document.createElement('div');
                 descEl.className = 'tool-desc normaltext';
-                descEl.textContent = tool.desc;
+                descEl.textContent = t(tool.descKey, tool.descKey);
                 info.appendChild(nameEl);
                 info.appendChild(descEl);
 
                 var runBtn = document.createElement('div');
                 runBtn.className = 'tool-run';
                 runBtn.setAttribute('data-tool-id', tool.id);
-                runBtn.title = '运行 ' + tool.name;
+                runBtn.title = t('clean.runTool', '运行 ') + nameEl.textContent;
                 runBtn.innerHTML = '&#9654;';
                 runBtn.addEventListener('click', function() {
                     if (tool.id === 'clean_user_paths') {
@@ -1976,6 +2763,30 @@
                 card.appendChild(runBtn);
                 container.appendChild(card);
             });
+        }
+
+        function rebuildToolCards() {
+            tools.forEach(function(tool) {
+                var card = document.querySelector('.tool-card[data-tool-id="' + tool.id + '"]');
+                if (!card) return;
+                var nameEl = card.querySelector('.tool-name');
+                var descEl = card.querySelector('.tool-desc');
+                var runBtn = card.querySelector('.tool-run');
+                if (nameEl) nameEl.textContent = t(tool.nameKey, nameEl.textContent);
+                if (descEl) descEl.textContent = t(tool.descKey, descEl.textContent);
+                if (runBtn) runBtn.title = t('common.runTool', '运行 ') + (nameEl ? nameEl.textContent : '');
+            });
+        }
+
+        function syncDynamicUiText() {
+            var presetBtn = document.getElementById('btn-select-preset');
+            var manageBtn = document.getElementById('preset-manage-btn');
+            if (presetBtn && (getSelectedPresetName() === '推荐清理')) {
+                presetBtn.textContent = t('clean.recommendedPreset', '推荐清理');
+            }
+            if (manageBtn && (getManagedPresetName() === '推荐清理')) {
+                manageBtn.textContent = t('clean.recommendedPreset', '推荐清理');
+            }
         }
 
         // ===== Custom Script (bat editor) =====
@@ -2076,8 +2887,8 @@
 
         function updateRunSelectedButton() {
             var btn = document.getElementById('btn-run-selected');
-            var count = getSelectedIds().length;
-            btn.textContent = count > 0 ? '运行选中 (' + count + ')' : '运行选中';
+            if (!btn) return;
+            btn.textContent = t('clean.runSelected', '运行选中');
         }
 
         async function getCDriveUsageSnapshot() {
@@ -2133,7 +2944,7 @@
 
         function buildCleanupStatsMessage(before, after) {
             if (!before || !after || !before.total || !after.total) {
-                return '清理完成。';
+                return t('dialog.cleanupDone', '清理完成。');
             }
             var beforeUsed = before.total - before.free;
             var afterUsed = after.total - after.free;
@@ -2141,10 +2952,10 @@
             var usedBeforePct = Math.max(0, Math.min(100, beforeUsed / before.total * 100));
             var usedAfterPct = Math.max(0, Math.min(100, afterUsed / after.total * 100));
             return [
-                '清理完成。',
-                'C 盘清理前已用：' + formatBytesShort(beforeUsed) + '（' + usedBeforePct.toFixed(0) + '%）',
-                'C 盘清理后已用：' + formatBytesShort(afterUsed) + '（' + usedAfterPct.toFixed(0) + '%）',
-                '本次释放空间：' + formatBytesShort(freed)
+                t('dialog.cleanupDone', '清理完成。'),
+                t('dialog.cleanupBeforeUsed', 'C 盘清理前已用：') + formatBytesShort(beforeUsed) + '（' + usedBeforePct.toFixed(0) + '%）',
+                t('dialog.cleanupAfterUsed', 'C 盘清理后已用：') + formatBytesShort(afterUsed) + '（' + usedAfterPct.toFixed(0) + '%）',
+                t('dialog.cleanupFreed', '本次释放空间：') + formatBytesShort(freed)
             ].join('\n');
         }
 
@@ -2246,7 +3057,10 @@
 
         function getToolName(id) {
             for (var i = 0; i < tools.length; i++) {
-                if (tools[i].id === id) return tools[i].name;
+                if (tools[i].id === id) {
+                    var key = tools[i].nameKey || '';
+                    return t(key, id);
+                }
             }
             return id;
         }
@@ -2287,16 +3101,16 @@
                 } else {
                     logOutput('全部任务完成。', 'ok');
                 }
-                document.getElementById('btn-run-selected').textContent = '运行选中';
+                document.getElementById('btn-run-selected').textContent = t('clean.runSelected', '运行选中');
                 setTimeout(resetAllToolButtons, 1500);
                 try {
                     var afterSnapshot = await getCDriveUsageSnapshot();
                     var beforeSnapshot = window._cleanupStartSnapshot;
                     await loadCDriveUsage();
-                    await alertDialog('清理结果', buildCleanupStatsMessage(beforeSnapshot, afterSnapshot));
+                    await alertDialog(t('dialog.cleanupResult', '清理结果'), buildCleanupStatsMessage(beforeSnapshot, afterSnapshot));
                 } catch(e) {
                     await loadCDriveUsage();
-                    await alertDialog('清理结果', '清理完成。');
+                    await alertDialog(t('dialog.cleanupResult', '清理结果'), t('dialog.cleanupDone', '清理完成。'));
                 }
                 return;
             }
@@ -2428,16 +3242,16 @@
             var statusEl = document.getElementById('hibernate-status');
             var outputEl = document.getElementById('hibernate-output');
             if (!statusEl) return;
-            statusEl.textContent = '查询中...';
+            statusEl.textContent = t('common.loading', '查询中...');
             try {
                 var enabled = await sendToBackend('get_hibernate_status');
-                statusEl.textContent = enabled ? '已启用' : '已禁用';
+                statusEl.textContent = enabled ? t('common.enabled', '已启用') : t('common.disabled', '已禁用');
                 statusEl.style.color = enabled ? 'var(--accent-color)' : 'var(--text-muted)';
             } catch(e) {
-                statusEl.textContent = '查询失败';
+                statusEl.textContent = t('common.failed', '查询失败');
                 if (outputEl) {
                     outputEl.className = 'link-output show err';
-                    outputEl.textContent = '错误: ' + (e.message || e);
+                    outputEl.textContent = t('common.errorPrefix', '错误: ') + (e.message || e);
                 }
             }
         }
@@ -2445,7 +3259,7 @@
         async function setHibernate(enabled) {
             var outputEl = document.getElementById('hibernate-output');
             outputEl.className = 'link-output show';
-            outputEl.textContent = '正在' + (enabled ? '启用' : '禁用') + '休眠...';
+            outputEl.textContent = t('common.runningPrefix', '正在') + (enabled ? t('common.enable', '启用') : t('common.disable', '禁用')) + t('advanced.hibernateTitle', '休眠开关') + '...';
             outputEl.style.color = 'inherit';
             try {
                 var result = await sendToBackend('set_hibernate', { enabled: enabled });
@@ -2454,28 +3268,28 @@
                 await loadHibernateStatus();
             } catch(e) {
                 outputEl.className = 'link-output show err';
-                outputEl.textContent = '操作失败: ' + (e.message || e);
+                outputEl.textContent = t('common.operationFailed', '操作失败: ') + (e.message || e);
             }
         }
 
         async function loadVirtualMemoryInfo() {
             var infoEl = document.getElementById('vm-info');
             if (!infoEl) return;
-            infoEl.textContent = '查询中...';
+            infoEl.textContent = t('common.loading', '查询中...');
             try {
                 var raw = await sendToBackend('get_virtual_memory_info');
                 var data = JSON.parse(raw);
                 if (!data || (Array.isArray(data) && data.length === 0)) {
-                    infoEl.textContent = '未配置（由系统管理）';
+                    infoEl.textContent = t('advanced.notConfigured', '未配置（由系统管理）');
                     return;
                 }
                 var arr = Array.isArray(data) ? data : [data];
                 var parts = arr.map(function(p) {
                     return p.Name + ' (' + p.InitialSize + ' MB ~ ' + p.MaximumSize + ' MB)';
                 });
-                infoEl.textContent = parts.join('; ') || '未配置（由系统管理）';
+                infoEl.textContent = parts.join('; ') || t('advanced.notConfigured', '未配置（由系统管理）');
             } catch(e) {
-                infoEl.textContent = '查询失败';
+                infoEl.textContent = t('common.failed', '查询失败');
             }
         }
 
@@ -2487,7 +3301,7 @@
                 await sendToBackend('run_without_wait', { path: batPath });
             } catch(e) {
                 var vmInfo = document.getElementById('vm-info');
-                if (vmInfo) vmInfo.textContent = '打开失败: ' + (e.message || e);
+                if (vmInfo) vmInfo.textContent = t('common.openFailed', '打开失败: ') + (e.message || e);
             }
         }
 
@@ -2499,7 +3313,7 @@
             var currentVer = document.getElementById('about-version').textContent.trim();
 
             btn.disabled = true;
-            btn.textContent = '检查中...';
+            btn.textContent = t('about.checking', 'Checking...');
             status.textContent = '';
             output.className = 'link-output';
             output.textContent = '';
@@ -2512,30 +3326,30 @@
                 function _cmpVer(a,b){var p=a.split(".").map(Number),q=b.split(".").map(Number);for(var k=0;k<Math.max(p.length,q.length);k++){var va=p[k]||0,vb=q[k]||0;if(va>vb)return 1;if(va<vb)return -1}return 0}
                 var _cmp = _cmpVer(latestVer, currentVer);
                 if (_cmp > 0) {
-                    status.textContent = '发现新版本 ' + latestVer;
+                    status.textContent = t('about.newVersionFound', 'New version {version} found').replace('{version}', latestVer);
                     status.style.color = '#eab308';
                     output.className = 'link-output show';
-                    output.innerHTML = '新版本 ' + latestVer + ' 可用。' +
-                        ' <a href="https://github.com/Necream/WindowsCleanerNext-Tauri/releases/tag/v' + latestVer + '" target="_blank" style="color:var(--accent-color)">前往下载</a>';
+                    output.innerHTML = t('about.newVersionAvailable', 'New version {version} is available.').replace('{version}', latestVer) +
+                        ' <a href="https://github.com/Necream/WindowsCleanerNext-Tauri/releases/tag/v' + latestVer + '" target="_blank" style="color:var(--accent-color)">' + t('about.downloadLink', 'Go to download') + '</a>';
                 } else if (_cmp === 0) {
-                    status.textContent = '已是最新版本';
+                    status.textContent = t('about.alreadyLatest', 'Already up to date');
                     status.style.color = 'var(--accent-color)';
                     output.className = 'link-output show';
-                    output.textContent = '当前版本 ' + currentVer + ' 已是最新。';
+                    output.textContent = t('about.alreadyLatestDetail', 'Current version {current} is already the latest.').replace('{current}', currentVer);
                 } else {
-                    status.textContent = '使用的是开发内部版本，无法更新';
+                    status.textContent = t('about.devBuild', 'Development build');
                     status.style.color = 'var(--text-muted)';
                     output.className = 'link-output show';
-                    output.textContent = '当前版本 ' + currentVer + '，最新发布 ' + latestVer + '。';
+                    output.textContent = t('about.devBuildDetail', 'Current version {current} is a development build. It cannot be updated.').replace('{current}', currentVer);
                 }
             } catch(e) {
-                status.textContent = '检查失败';
+                status.textContent = t('about.checkFailed', 'Check failed');
                 status.style.color = '#ef4444';
                 output.className = 'link-output show err';
-                output.textContent = '无法获取最新版本信息: ' + (e.message || e);
+                output.textContent = t('about.checkFailedDetail', 'Unable to get the latest version information: {error}').replace('{error}', (e.message || e));
             } finally {
                 btn.disabled = false;
-                btn.textContent = '检查更新';
+                btn.textContent = t('about.checkUpdate', 'Check updates');
             }
         }
 
@@ -2597,11 +3411,11 @@
                 var usedPct = Math.max(0, Math.min(100, (used / total) * 100));
                 fill.style.width = usedPct.toFixed(1) + '%';
                 fill.classList.toggle('warn', usedPct >= 85);
-                percentEl.textContent = usedPct.toFixed(0) + '% 已用';
-                usedEl.textContent = '已用 ' + formatBytes(used);
-                freeEl.textContent = '剩余 ' + formatBytes(free);
+                percentEl.textContent = usedPct.toFixed(0) + '% ' + t('sidebar.used', '已用');
+                usedEl.textContent = t('sidebar.used', '已用') + ' ' + formatBytes(used);
+                freeEl.textContent = t('sidebar.free', '剩余') + ' ' + formatBytes(free);
             } catch(e) {
-                percentEl.textContent = '查询失败';
+                percentEl.textContent = t('common.failed', '查询失败');
                 usedEl.textContent = '--';
                 freeEl.textContent = '--';
                 fill.style.width = '0%';
@@ -2630,11 +3444,13 @@
                 window._appPath = '.';
             }
             await loadAppSettings();
+            await applyLanguage(appSettings.language || getDefaultLanguage(), false);
             buildUI();
             setupSettingsControls();
+            setInterval(pollSystemAccentColor, 10000);
             await detectNvidia();
             await loadCDriveUsage();
-            setInterval(loadCDriveUsage, 60000);
+            setInterval(loadCDriveUsage, 10000);
             ensurePresetExists('推荐清理');
             if (!appSettings.cleaningPresets[appSettings.activeCleaningPreset]) {
                 appSettings.activeCleaningPreset = '推荐清理';

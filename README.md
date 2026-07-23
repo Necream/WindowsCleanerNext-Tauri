@@ -91,6 +91,8 @@
 
 ## 运行开发版
 
+请注意，有些新的样式只有在开发版上才能正常显示，我正在处理这个问题！
+
 ```bash
 npm install
 npm run tauri dev
@@ -109,11 +111,7 @@ If SignPath approval is still pending, the release workflow publishes the unsign
 
 ## Microsoft Store 发布
 
-如果你想把这个项目提交到 Microsoft Store，可以先看这里：
-
-- [STORE_PUBLISH.md](./STORE_PUBLISH.md)
-
-当前仓库保留了现有的 Windows 安装包发布方式，同时也预留了商店提交所需的发布资料与流程说明。
+还没发。
 
 ## 目录说明
 
